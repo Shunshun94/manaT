@@ -1,8 +1,8 @@
 const crypto = require('crypto');
-const ObjectDTO = require('./ObjectDTO.js');
+const ObjectDAO = require('./ObjectDAO.js');
 
 const ObjectService = function() {
-	this.objectDTO = new ObjectDTO();
+	this.objectDAO = new ObjectDAO();
 };
 
 ObjectService.prototype.generateTenantId = function(request) {
@@ -57,7 +57,7 @@ ObjectService.prototype.convertCounters = function(string) {
 };
 
 ObjectService.prototype.getAll = function() {
-	return this.objectDTO.getAll();
+	return this.objectDAO.getAll();
 };
 
 ObjectService.prototype.addCharacter = function(query, tenantId) {
@@ -86,7 +86,7 @@ ObjectService.prototype.addCharacter = function(query, tenantId) {
 		throw 'ManatInternalError:' + e.toString();
 	}
 	
-	this.objectDTO.addCharacter(characterData, tenantId, query.room);
+	this.objectDAO.addCharacter(characterData, tenantId, query.room);
 	return characterData;
 };
 
