@@ -5,10 +5,14 @@ const ObjectService = function() {
 	this.objectDAO = new ObjectDAO();
 };
 
-ObjectService.prototype.generateTenantId = function(request) {
+ObjectService.prototype.hash = function(seed) {
 	var sha512 = crypto.createHash('sha512');
-	sha512.update(request.query.tenant || request.params.tenant || request.ip);
+	sha512.update(seed);
 	return sha512.digest('hex')
+};
+
+ObjectService.prototype.generateTenantId = function(request) {
+	return this.hash((request.query.tenant || request.params.tenant || request.ip));
 };
 
 ObjectService.prototype.queryValidation = function(query, required) {
@@ -86,7 +90,17 @@ ObjectService.prototype.addCharacter = function(query, tenantId) {
 		throw 'ManatInternalError:' + e.toString();
 	}
 	
-	this.objectDAO.addCharacter(characterData, tenantId, query.room);
+	if(query.pass) {
+		var password = this.hash(query.pass + tenantId);
+		if(query.isVisitable) {
+			this.objectDAO.addCharacter(characterData, tenantId, query.room, password);
+		} else {
+			this.objectDAO.addCharacter(characterData, tenantId, query.room, password, query.isVisitable);
+		}
+	} else {
+		this.objectDAO.addCharacter(characterData, tenantId, query.room);
+	}
+	
 	return characterData;
 };
 
