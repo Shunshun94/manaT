@@ -69,7 +69,6 @@ ObjectService.prototype.addCharacter = function(query, tenantId) {
 	try {
 		var characterData = {
 				type: 'characterData',
-				targetName: query.name,
 				name: query.name,
 				size: Number(query.size) || 1,
 				x: this.numberlize(query.x),
@@ -93,9 +92,9 @@ ObjectService.prototype.addCharacter = function(query, tenantId) {
 	if(query.pass) {
 		var password = this.hash(query.pass + tenantId);
 		if(query.isVisitable) {
-			this.objectDAO.addCharacter(characterData, tenantId, query.room, password);
-		} else {
 			this.objectDAO.addCharacter(characterData, tenantId, query.room, password, query.isVisitable);
+		} else {
+			this.objectDAO.addCharacter(characterData, tenantId, query.room, password);
 		}
 	} else {
 		this.objectDAO.addCharacter(characterData, tenantId, query.room);
@@ -104,9 +103,20 @@ ObjectService.prototype.addCharacter = function(query, tenantId) {
 	return characterData;
 };
 
-
-
-
+ObjectService.prototype.getCharacters = function(query, tenantId) {
+	this.queryValidation(query, ['room']);
+	if(query.pass) {
+		var password = this.hash(query.pass + tenantId);
+		if(query.isVisitable) {
+			return this.objectDAO.getCharacters(tenantId, query.room, password, query.isVisitable);
+		} else {
+			return this.objectDAO.getCharacters(tenantId, query.room, password);
+		}
+	} else {
+		return this.objectDAO.getCharacters(tenantId, query.room);
+	}
+	
+};
 
 
 

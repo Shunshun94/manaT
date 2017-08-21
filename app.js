@@ -27,10 +27,22 @@ app.get('/all', function (req, res) {
 	res.jsonp({result: 'OK', data: service.getAll()});
 });
 
+
+
 app.get('/addCharacter', function (req, res) {
 	try {
 		var character = service.addCharacter(req.query, service.generateTenantId(req));
 		res.jsonp({result: 'OK', data: character});
+	} catch (e) {
+		res.jsonp(errorReturn(e, req));
+	}
+});
+
+app.get('/getCharacters', function (req, res) {
+	try {
+		var characters = service.getCharacters(req.query, service.generateTenantId(req));
+		characters.result = 'OK';
+		res.jsonp(characters);
 	} catch (e) {
 		res.jsonp(errorReturn(e, req));
 	}
