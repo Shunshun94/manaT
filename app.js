@@ -7,12 +7,12 @@ const service = new ObjectService();
 
 function errorReturn(e, req) {
 	var msg = e.toString();
-	if(msg.startsWith('ManatInternalError:')) {
+	if(! msg.startsWith('Manat:')) {
 		return {result: 'まなてぃでエラーが発生しました' + msg + '\n' +
 			'よろしければ https://github.com/Shunshun94/manaT/issues にこのメッセージをコピペして起票するか @Shunshun94 に連絡してください。\n' +
 			req.originalUrl};
 	} else {
-		return {result: msg};
+		return {result: msg.replace('Manat:', '')};
 	}
 };
 
@@ -33,6 +33,15 @@ app.get('/addCharacter', function (req, res) {
 	try {
 		var character = service.addCharacter(req.query, service.generateTenantId(req));
 		res.jsonp({result: 'OK', data: character});
+	} catch (e) {
+		res.jsonp(errorReturn(e, req));
+	}
+});
+
+app.get('/removeCharacter', function (req, res) {
+	try {
+		service.removeCharacter(req.query, service.generateTenantId(req));
+		res.jsonp({result: 'OK'});
 	} catch (e) {
 		res.jsonp(errorReturn(e, req));
 	}

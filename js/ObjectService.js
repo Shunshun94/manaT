@@ -18,7 +18,7 @@ ObjectService.prototype.generateTenantId = function(request) {
 ObjectService.prototype.queryValidation = function(query, required) {
 	required.forEach(function(word) {
 		if(! Boolean(query[word])) {
-			throw '引数「' + word + '」がありません。';
+			throw 'Manat:引数「' + word + '」がありません。';
 		}
 	});
 	return true;
@@ -86,7 +86,7 @@ ObjectService.prototype.addCharacter = function(query, tenantId) {
 	} catch (e) {
 		console.error(e);
 		console.trace();
-		throw 'ManatInternalError:' + e.toString();
+		throw e.toString();
 	}
 	
 	if(query.pass) {
@@ -103,17 +103,32 @@ ObjectService.prototype.addCharacter = function(query, tenantId) {
 	return characterData;
 };
 
-ObjectService.prototype.getCharacters = function(query, tenantId) {
-	this.queryValidation(query, ['room']);
+ObjectService.prototype.removeCharacter = function(query, tenantId) {
+	this.queryValidation(query, ['targetName']);
 	if(query.pass) {
 		var password = this.hash(query.pass + tenantId);
 		if(query.isVisitable) {
-			return this.objectDAO.getCharacters(tenantId, query.room, password, query.isVisitable);
+			this.objectDAO.removeCharacter(query.targetName, tenantId, query.room, password, query.isVisitable);
 		} else {
-			return this.objectDAO.getCharacters(tenantId, query.room, password);
+			this.objectDAO.removeCharacter(query.targetName, tenantId, query.room, password);
 		}
 	} else {
-		return this.objectDAO.getCharacters(tenantId, query.room);
+		this.objectDAO.removeCharacter(query.targetName, tenantId, query.room);
+	}
+};
+
+ObjectService.prototype.getCharacters = function(query, tenantId) {
+	this.queryValidation(query, ['room']);
+	var time = query.characters || query.lastUpdateTime || query.lastUpdate || 0;
+	if(query.pass) {
+		var password = this.hash(query.pass + tenantId);
+		if(query.isVisitable) {
+			return this.objectDAO.getCharacters(time, tenantId, query.room, password, query.isVisitable);
+		} else {
+			return this.objectDAO.getCharacters(time, tenantId, query.room, password);
+		}
+	} else {
+		return this.objectDAO.getCharacters(time, tenantId, query.room);
 	}
 	
 };
