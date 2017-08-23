@@ -69,6 +69,16 @@ ObjectDAO.prototype.removeCharacter = function(targetName, tenantId, roomId, opt
 	}
 };
 
+ObjectDAO.prototype.getCharacter = function(targetName, tenantId, roomId, opt_password, opt_isVisitable) {
+	var room = this.getRoom(tenantId, roomId, opt_password, opt_isVisitable);
+	this.isPermitted(tenantId, roomId, opt_password, true);
+	if(room.objects[targetName]) {
+		return room.objects[targetName];
+	} else {
+		throw 'Manat:「' + targetName + '」という名前のキャラクターは存在しません'
+	}
+};
+
 ObjectDAO.prototype.getCharacters = function(time, tenantId, roomId, opt_password, opt_isVisitable) {
 	var result = this.getObjects(time, tenantId, roomId, opt_password, opt_isVisitable, function(character) {
 		return character.type === 'characterData';

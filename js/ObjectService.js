@@ -117,6 +117,20 @@ ObjectService.prototype.removeCharacter = function(query, tenantId) {
 	}
 };
 
+ObjectService.prototype.getCharacter = function(query, tenantId) {
+	this.queryValidation(query, ['targetName']);
+	if(query.pass) {
+		var password = this.hash(query.pass + tenantId);
+		if(query.isVisitable) {
+			return this.objectDAO.getCharacter(query.targetName, tenantId, query.room, password, query.isVisitable);
+		} else {
+			return this.objectDAO.getCharacter(query.targetName, tenantId, query.room, password);
+		}
+	} else {
+		return this.objectDAO.getCharacter(query.targetName, tenantId, query.room);
+	}
+};
+
 ObjectService.prototype.getCharacters = function(query, tenantId) {
 	this.queryValidation(query, ['room']);
 	var time = query.characters || query.lastUpdateTime || query.lastUpdate || 0;
