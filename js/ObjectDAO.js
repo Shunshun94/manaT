@@ -38,14 +38,12 @@ ObjectDAO.prototype.isPermitted = function(tenantId, roomId, hashedPassword, opt
 	var isRead = opt_isRead || false;
 	var roomStatus = this.getHashedPassword(tenantId, roomId);
 	
-	if((roomStatus.isVisitable && isRead) || (hashedPassword === roomStatus.password)) {
+	if( !(Boolean(roomStatus.password)) || (roomStatus.isVisitable && isRead) || (hashedPassword === roomStatus.password)) {
 		return true;
 	}
 	
 	throw 'Manat:passwordMismatch';
 };
-
-
 
 ObjectDAO.prototype.addCharacter = function(characterData, tenantId, roomId, opt_password, opt_isVisitable) {
 	var room = this.getRoom(tenantId, roomId, opt_password, opt_isVisitable);
@@ -105,5 +103,12 @@ ObjectDAO.prototype.getAll = function() {
 	return this.store;
 };
 
+ObjectDAO.prototype.removeAll = function(lastUpdate) {
+	for(tenantId in this.store) {
+		if(this.store[tenantId].lastAccess < lastUpdate) {
+			delete this.store[tenantId];
+		}
+	}
+};
 
 module.exports = ObjectDAO;

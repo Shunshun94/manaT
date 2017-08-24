@@ -64,31 +64,29 @@ ObjectService.prototype.getAll = function() {
 	return this.objectDAO.getAll();
 };
 
+ObjectService.prototype.removeAll = function(req) {
+	return this.objectDAO.removeAll(query.characters || query.lastUpdateTime || query.lastUpdate || (new Date()).getTime());
+};
+
 ObjectService.prototype.addCharacter = function(query, tenantId) {
-	this.queryValidation(query, ['name', 'room']);
-	try {
-		var characterData = {
-				type: 'characterData',
-				name: query.name,
-				size: Number(query.size) || 1,
-				x: this.numberlize(query.x),
-				y: this.numberlize(query.y),
-				draggable: this.boolealize(query.draggable),
-				isHide: this.boolealize(query.isHide, false),
-				initiative: this.numberlize(query.initiative),
-				dogTag: this.numberlize(query.dogTag, ''),
-				url: query.url || '',
-				info: query.info || '',
-				imageName: query.image || '', // TODO デフォルト画像どうします？
-				statusAlias: this.convertCounters(query.statusAlias || ''),
-				counters: this.convertCounters(query.counters || '')
-			};
-	} catch (e) {
-		console.error(e);
-		console.trace();
-		throw e.toString();
-	}
-	
+	this.queryValidation(query, ['room', 'name']);
+	var characterData = {
+			type: 'characterData',
+			name: query.name,
+			size: Number(query.size) || 1,
+			x: this.numberlize(query.x),
+			y: this.numberlize(query.y),
+			draggable: this.boolealize(query.draggable),
+			isHide: this.boolealize(query.isHide, false),
+			initiative: this.numberlize(query.initiative),
+			dogTag: this.numberlize(query.dogTag, ''),
+			url: query.url || '',
+			info: query.info || '',
+			imageName: query.image || '', // TODO デフォルト画像どうします？
+			statusAlias: this.convertCounters(query.statusAlias || ''),
+			counters: this.convertCounters(query.counters || '')
+		};
+
 	if(query.pass) {
 		var password = this.hash(query.pass + tenantId);
 		if(query.isVisitable) {
@@ -104,7 +102,7 @@ ObjectService.prototype.addCharacter = function(query, tenantId) {
 };
 
 ObjectService.prototype.removeCharacter = function(query, tenantId) {
-	this.queryValidation(query, ['targetName']);
+	this.queryValidation(query, ['room', 'targetName']);
 	if(query.pass) {
 		var password = this.hash(query.pass + tenantId);
 		if(query.isVisitable) {
@@ -118,7 +116,7 @@ ObjectService.prototype.removeCharacter = function(query, tenantId) {
 };
 
 ObjectService.prototype.getCharacter = function(query, tenantId) {
-	this.queryValidation(query, ['targetName']);
+	this.queryValidation(query, ['room', 'targetName']);
 	if(query.pass) {
 		var password = this.hash(query.pass + tenantId);
 		if(query.isVisitable) {

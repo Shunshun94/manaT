@@ -16,6 +16,13 @@ function errorReturn(e, req) {
 	}
 };
 
+function isAdminRequest(req) {
+	if(req.ip.endsWith('127.0.0.1')) {
+		return true;
+	}
+	throw 'Manat:管理者でないとこのコマンドは実行できません';
+};
+
 
 app.get('/', function (req, res) {
 	res.jsonp({result: 'OK', message:'まなてぃは起動しています',
@@ -23,10 +30,24 @@ app.get('/', function (req, res) {
 		tenantId: service.generateTenantId(req)});
 });
 
-app.get('/all', function (req, res) {
-	res.jsonp({result: 'OK', data: service.getAll()});
+app.get('/getAll', function (req, res) {
+	try {
+		isAdminRequest(req);
+		res.jsonp({result: 'OK', data: service.getAll(れｑ)});
+	} catch (e) {
+		res.jsonp(errorReturn(e, req));
+	}
 });
 
+app.get('/removeAll', function (req, res) {
+	try {
+		isAdminRequest(req);
+		service.removeAll(req)
+		res.jsonp({result: 'OK'});
+	} catch (e) {
+		res.jsonp(errorReturn(e, req));
+	}
+});
 
 
 app.get('/addCharacter', function (req, res) {
