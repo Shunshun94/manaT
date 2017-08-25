@@ -142,6 +142,47 @@ ObjectService.prototype.changeCharacter = function(query, tenantId) {
 	return result;
 };
 
+ObjectService.prototype.updateCharacter = function(query, tenantId) {
+	this.queryValidation(query, ['room', 'targetName']);
+	var characterData = {};
+	
+	var elements = ['targetName', 'name', 'info', 'image', 'url'];
+	var numbers = ['x', 'y', 'size', 'initiative', 'rotation', 'dogTag'];
+	var booleans = ['draggable', 'isHide']
+	var counters = ['counters', 'statusAlias'];
+	
+	for(var key in query) {
+		if(elements.indexOf(key) > -1) {
+			if(key === 'image') {
+				characterData.imageName = query[key];
+			} else {
+				characterData[key] = query[key];
+			}
+		}else if(numbers.indexOf(key) > -1) {
+			characterData[key] = this.numberlize(query[key]);
+		}else if(booleans.indexOf(key) > -1) {
+			characterData[key] = this.boolealize(query[key]);
+		}else if(counters.indexOf(key) > -1) {
+			characterData[key] = this.convertCounters(query[key]);
+		}
+	}
+	
+	var result;
+
+	if(query.password) {
+		var password = this.hash(query.password + tenantId);
+		if(query.isVisitable) {
+			result = this.objectDAO.updateCharacter(characterData, tenantId, query.room, password, query.isVisitable);
+		} else {
+			result = this.objectDAO.updateCharacter(characterData, tenantId, query.room, password);
+		}
+	} else {
+		result = this.objectDAO.updateCharacter(characterData, tenantId, query.room);
+	}
+	
+	return result;
+};
+
 ObjectService.prototype.removeCharacter = function(query, tenantId) {
 	this.queryValidation(query, ['room', 'targetName']);
 	if(query.password) {

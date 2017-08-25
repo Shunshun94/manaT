@@ -67,8 +67,32 @@ function charactersCount3(result) {
 }
 
 function isCharacterSetupedWell(result) {
-	var counters = {HP: 1, MP: 1};
+	var counters = {HP: 1, MP: 1, LOVE:undefined};
 	var resultData = {x:1, y:9, info: 'ひつじだよ', isHide: true};
+	
+	var character = result.data;
+	for(var key in counters) {
+		if(counters[key] != character.counters[key]) {
+			return {
+				result: 'character.counters.' +key + ' は ' + counters[key] + ' が期待されますが、実際には ' + character.counters[key] + 'でした'
+			};
+		}
+	}
+	
+	for(var key in resultData) {
+		if(resultData[key] != character[key]) {
+			return {
+				result: 'character.' +key + ' は ' + resultData[key] + ' が期待されますが、実際には ' + character[key] + 'でした'
+			};
+		}
+	}
+	
+	return {result: 'OK'};
+}
+
+function isCharacterUpdatedWellUpdateMethod(result) {
+	var counters = {HP: 32, MP: 8, LOVE: 'hiyoko'};
+	var resultData = {x:8, y:8, info: 'ひつじなの！', isHide: false};
 	
 	var character = result.data;
 	for(var key in counters) {
@@ -128,10 +152,11 @@ var tests = [
 ['キャラクター追加 (重複名前でミス)', 'addCharacter', {room: 1, name:'ひつこ'}, isNG],
 ['キャラクター削除', 'removeCharacter', {room: 1, targetName:'ひよこ'}],
 ['キャラクター追加', 'addCharacter', {room: 1, name:'ひつじ', isHide:'12', counters: 'HP:1,MP:1', x:1, y:9, info: 'ひつじだよ'}, isCharacterSetupedWell],
-['キャラクター修正 (名前含まず指定ミス)', 'changeCharacter', {room: 1, targetName:'存在しない名前', isHide:'', counters: 'HP:8,MP:8', x:8, y:8, info: 'ひつじなの！'}, isNG],
-['キャラクター修正 (名前含まず)', 'changeCharacter', {room: 1, targetName:'ひつじ', isHide:'', counters: 'HP:8,MP:8', x:8, y:8, info: 'ひつじなの！'}, isCharacterUpdatedWellWithoutName],
-['キャラクター修正 (名前含むが既存の名前)', 'changeCharacter', {room: 1, targetName:'ひつじ', name:'ひつじ'}, isExist],
-['キャラクター修正 (名前含む)', 'changeCharacter', {room: 1, targetName:'ひつじ', name:'ひつつーん', isHide:'12', counters: 'HP:1,MP:1', x:1, y:9, info: 'ひつじだよ'}, isCharacterSetupedWell],
+['キャラクター修正 (change 名前含まず指定ミス)', 'changeCharacter', {room: 1, targetName:'存在しない名前', isHide:'', counters: 'HP:8,MP:8', x:8, y:8, info: 'ひつじなの！'}, isNG],
+['キャラクター修正 (change 名前含まず)', 'changeCharacter', {room: 1, targetName:'ひつじ', isHide:'', counters: 'HP:8,MP:8', x:8, y:8, info: 'ひつじなの！'}, isCharacterUpdatedWellWithoutName],
+['キャラクター修正 (update 名前含まず)', 'updateCharacter', {room: 1, targetName:'ひつじ', isHide:'', counters: 'HP:32,LOVE:hiyoko'}, isCharacterUpdatedWellUpdateMethod],
+['キャラクター修正 (change 名前含むが既存の名前)', 'changeCharacter', {room: 1, targetName:'ひつじ', name:'ひつじ'}, isExist],
+['キャラクター修正 (change 名前含む)', 'changeCharacter', {room: 1, targetName:'ひつじ', name:'ひつつーん', isHide:'12', counters: 'HP:1,MP:1', x:1, y:9, info: 'ひつじだよ'}, isCharacterSetupedWell],
 ['キャラクタ―追加の結果', 'getCharacters', {room: 1}, charactersCount2],
 
 ['パスワードがない部屋へのパスワードを付けての入室', 'getCharacters', {room: 1, password: 'dummy'}],

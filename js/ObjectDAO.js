@@ -82,6 +82,37 @@ ObjectDAO.prototype.changeCharacter = function(characterData, tenantId, roomId, 
 	return room.objects[name];
 };
 
+ObjectDAO.prototype.updateCharacter = function(characterData, tenantId, roomId, opt_password, opt_isVisitable) {
+	var room = this.getRoom(tenantId, roomId, opt_password, opt_isVisitable);
+	this.isPermitted(tenantId, roomId, opt_password);
+	if(! Boolean(room.objects[characterData.targetName])) {
+		throw 'Manat:「' + characterData.targetName + '」という名前のキャラクターは存在しません';
+	}
+	if(Boolean(characterData.name)) {
+		if(room.objects[characterData.name]) {
+			throw 'Manat:「' + characterData.name + '」という名前のキャラクターはすでに存在しています';
+		}
+		room.objects[characterData.name] = room.objects[characterData.targetName];
+		delete room.objects[characterData.targetName];
+	}
+	
+	var name = characterData.name || characterData.targetName
+	
+	for(var key in characterData) {
+		if(['counters', 'statusAlias'].indexOf(key) > -1) {
+			for(var ckey in characterData[key]) {
+				room.objects[name][key][ckey] = characterData[key][ckey];
+			}
+		} else {
+			room.objects[name][key] = characterData[key];
+		}
+	}
+	room.objects[name].lastUpdate = (new Date()).getTime();
+	room.lastUpdate = (new Date()).getTime();
+
+	return room.objects[name];
+};
+
 ObjectDAO.prototype.removeCharacter = function(targetName, tenantId, roomId, opt_password, opt_isVisitable) {
 	var room = this.getRoom(tenantId, roomId, opt_password, opt_isVisitable);
 	this.isPermitted(tenantId, roomId, opt_password);

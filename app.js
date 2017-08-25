@@ -68,6 +68,15 @@ app.get('/changeCharacter', function (req, res) {
 	}
 });
 
+app.get('/updateCharacter', function (req, res) {
+	try {
+		var character = service.updateCharacter(req.query, service.generateTenantId(req));
+		res.jsonp({result: 'OK', data: character});
+	} catch (e) {
+		res.jsonp(errorReturn(e, req));
+	}
+});
+
 app.get('/removeCharacter', function (req, res) {
 	try {
 		service.removeCharacter(req.query, service.generateTenantId(req));
