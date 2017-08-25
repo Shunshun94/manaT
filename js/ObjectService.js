@@ -64,7 +64,7 @@ ObjectService.prototype.getAll = function() {
 	return this.objectDAO.getAll();
 };
 
-ObjectService.prototype.removeAll = function(req) {
+ObjectService.prototype.removeAll = function(query) {
 	return this.objectDAO.removeAll(query.characters || query.lastUpdateTime || query.lastUpdate || (new Date()).getTime());
 };
 
@@ -87,8 +87,8 @@ ObjectService.prototype.addCharacter = function(query, tenantId) {
 			counters: this.convertCounters(query.counters || '')
 		};
 
-	if(query.pass) {
-		var password = this.hash(query.pass + tenantId);
+	if(query.password) {
+		var password = this.hash(query.password + tenantId);
 		if(query.isVisitable) {
 			this.objectDAO.addCharacter(characterData, tenantId, query.room, password, query.isVisitable);
 		} else {
@@ -101,10 +101,51 @@ ObjectService.prototype.addCharacter = function(query, tenantId) {
 	return characterData;
 };
 
+ObjectService.prototype.changeCharacter = function(query, tenantId) {
+	this.queryValidation(query, ['room', 'targetName']);
+	var characterData = {};
+	
+	var elements = ['targetName', 'name', 'info', 'image', 'url'];
+	var numbers = ['x', 'y', 'size', 'initiative', 'rotation', 'dogTag'];
+	var booleans = ['draggable', 'isHide']
+	var counters = ['counters', 'statusAlias'];
+	
+	for(var key in query) {
+		if(elements.indexOf(key) > -1) {
+			if(key === 'image') {
+				characterData.imageName = query[key];
+			} else {
+				characterData[key] = query[key];
+			}
+		}else if(numbers.indexOf(key) > -1) {
+			characterData[key] = this.numberlize(query[key]);
+		}else if(booleans.indexOf(key) > -1) {
+			characterData[key] = this.boolealize(query[key]);
+		}else if(counters.indexOf(key) > -1) {
+			characterData[key] = this.convertCounters(query[key]);
+		}
+	}
+	
+	var result;
+
+	if(query.password) {
+		var password = this.hash(query.password + tenantId);
+		if(query.isVisitable) {
+			result = this.objectDAO.changeCharacter(characterData, tenantId, query.room, password, query.isVisitable);
+		} else {
+			result = this.objectDAO.changeCharacter(characterData, tenantId, query.room, password);
+		}
+	} else {
+		result = this.objectDAO.changeCharacter(characterData, tenantId, query.room);
+	}
+	
+	return result;
+};
+
 ObjectService.prototype.removeCharacter = function(query, tenantId) {
 	this.queryValidation(query, ['room', 'targetName']);
-	if(query.pass) {
-		var password = this.hash(query.pass + tenantId);
+	if(query.password) {
+		var password = this.hash(query.password + tenantId);
 		if(query.isVisitable) {
 			this.objectDAO.removeCharacter(query.targetName, tenantId, query.room, password, query.isVisitable);
 		} else {
@@ -117,8 +158,8 @@ ObjectService.prototype.removeCharacter = function(query, tenantId) {
 
 ObjectService.prototype.getCharacter = function(query, tenantId) {
 	this.queryValidation(query, ['room', 'targetName']);
-	if(query.pass) {
-		var password = this.hash(query.pass + tenantId);
+	if(query.password) {
+		var password = this.hash(query.password + tenantId);
 		if(query.isVisitable) {
 			return this.objectDAO.getCharacter(query.targetName, tenantId, query.room, password, query.isVisitable);
 		} else {
@@ -132,8 +173,8 @@ ObjectService.prototype.getCharacter = function(query, tenantId) {
 ObjectService.prototype.getCharacters = function(query, tenantId) {
 	this.queryValidation(query, ['room']);
 	var time = query.characters || query.lastUpdateTime || query.lastUpdate || 0;
-	if(query.pass) {
-		var password = this.hash(query.pass + tenantId);
+	if(query.password) {
+		var password = this.hash(query.password + tenantId);
 		if(query.isVisitable) {
 			return this.objectDAO.getCharacters(time, tenantId, query.room, password, query.isVisitable);
 		} else {
@@ -141,8 +182,7 @@ ObjectService.prototype.getCharacters = function(query, tenantId) {
 		}
 	} else {
 		return this.objectDAO.getCharacters(time, tenantId, query.room);
-	}
-	
+		}
 };
 
 

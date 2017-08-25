@@ -33,7 +33,7 @@ app.get('/', function (req, res) {
 app.get('/getAll', function (req, res) {
 	try {
 		isAdminRequest(req);
-		res.jsonp({result: 'OK', data: service.getAll(れｑ)});
+		res.jsonp({result: 'OK', data: service.getAll(req)});
 	} catch (e) {
 		res.jsonp(errorReturn(e, req));
 	}
@@ -42,7 +42,7 @@ app.get('/getAll', function (req, res) {
 app.get('/removeAll', function (req, res) {
 	try {
 		isAdminRequest(req);
-		service.removeAll(req)
+		service.removeAll(req.query)
 		res.jsonp({result: 'OK'});
 	} catch (e) {
 		res.jsonp(errorReturn(e, req));
@@ -53,6 +53,15 @@ app.get('/removeAll', function (req, res) {
 app.get('/addCharacter', function (req, res) {
 	try {
 		var character = service.addCharacter(req.query, service.generateTenantId(req));
+		res.jsonp({result: 'OK', data: character});
+	} catch (e) {
+		res.jsonp(errorReturn(e, req));
+	}
+});
+
+app.get('/changeCharacter', function (req, res) {
+	try {
+		var character = service.changeCharacter(req.query, service.generateTenantId(req));
 		res.jsonp({result: 'OK', data: character});
 	} catch (e) {
 		res.jsonp(errorReturn(e, req));
