@@ -82,7 +82,7 @@ ObjectService.prototype.addCharacter = function(query, tenantId) {
 			dogTag: this.numberlize(query.dogTag, ''),
 			url: query.url || '',
 			info: query.info || '',
-			imageName: query.image || '', // TODO デフォルト画像どうします？
+			imageName: query.image || 'https://shunshun94.github.io/manaT/images/default.png',
 			statusAlias: this.convertCounters(query.statusAlias || ''),
 			counters: this.convertCounters(query.counters || '')
 		};
