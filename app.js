@@ -25,9 +25,7 @@ function isAdminRequest(req) {
 
 
 app.get('/', function (req, res) {
-	res.jsonp({result: 'OK', message:'まなてぃは起動しています',
-		requestFrom: req.ip, query: req.query,
-		tenantId: service.generateTenantId(req)});
+	res.jsonp({result: 'OK', message:'まなてぃは起動しています'});
 });
 
 app.get('/getAll', function (req, res) {
