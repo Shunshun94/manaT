@@ -21,8 +21,8 @@
 
 キー  | 例            | 説明
 ----------- | ------------- | -----
-`result`    | `OK`     | 処理が正常終了したか否か。正常に取得出来たら `OK` が、失敗したら理由が入る
-`message`    | `まなてぃは起動しています`     | まなてぃが問題なく起動している旨
+`result`    | `OK`     | 処理が正常終了したか否か。正常に取得出来たら `OK` が、失敗したら理由が入ります
+`message`    | `まなてぃは起動しています`     | まなてぃが問題なく起動している旨が入ります
 
 
 ### レスポンス例
@@ -65,7 +65,48 @@
 
 ### レスポンス
 
+キー  | 例            | 説明
+----------- | ------------- | -----
+`result`    | `OK`     | 処理が正常終了したか否か。正常に取得出来たら `OK` が、失敗したら理由が入ります
+`data`    | 後述 | 追加したキャラクターデータが入ります。ただし、以下のデータについて追加・変更がされています
 
+変更の種類 | キー  | 説明
+----------- | ------------- | -----
+追加 | `type` | このデータがどんなデータなのかを示します。キャラクターのデータであることを示す `characterData` が代入されています
+変更 | `statusAlias` | `statusAlias`　が連想配列の形で入っています
+変更 | `counters` | `counters`　が連想配列の形で入っています
+追加 | `lastUpdate` | 最終更新時間が1970 年 1 月 1 日 (UTC) から始まるミリ秒単位の時刻値で入っています
+
+### レスポンス例
+
+```json
+{
+	"result":"OK",
+	"data":{
+		"type":"characterData",
+		"name":"koneko",
+		"size":2,
+		"x":0,
+		"y":1,
+		"draggable":true,
+		"isHide":true,
+		"initiative":9,
+		"dogTag":1,
+		"url":"https://shunshun94.github.io/manaT/",
+		"info":"foo",
+		"imageName":"https://shunshun94.github.io/manaT/images/default.png",
+		"statusAlias":{
+			"check":"abc",
+			"check2":"def"},
+		"counters":{
+			"HP":"1",
+			"MP":"1",
+			"*check":"1"
+		},
+		"lastUpdate":1503782558121
+	}
+}
+```
 
 ## addCharacter
 
