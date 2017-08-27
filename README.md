@@ -52,3 +52,8 @@ WebIF の内容を参考にしました。本アプリにはこの WebIF との�
 ### 本アプリのライセンス
 
 [3-clause BSD license](LICENSE) (修正 BSD ライセンス) で配布しています。
+
+### 他のドキュメント
+
+- [API](./api.md)
+- [データ管理のしくみ](./data.md)
