@@ -16,7 +16,12 @@
     "url": "https://github.com/Shunshun94/manaT/issues"
   },
   "homepage": "https://github.com/Shunshun94/manaT",
-  "config": {"port": "3001"},
+  "config": {
+  	"port": "3001",
+  	"key": "",
+  	"crt": "",
+  	"passphrase": ""
+  },
   "dependencies": {
     "express": ">=4.15.4"
   }

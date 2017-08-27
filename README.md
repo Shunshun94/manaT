@@ -26,6 +26,20 @@ npm start
 
 ``npm config set manat:port (ポート番号)``
 
+### HTTPS にしたい場合は
+
+```bash
+npm config set manat:key (秘密鍵へのパス)
+npm config set manat:crt (公開鍵へのパス)
+npm config set manat:passphrase (秘密鍵のパスワード)
+```
+
+HTTP に戻す場合は `key` か `crt` を空欄にしてください。
+
+```bash
+npm config set manat:key ""
+npm config set manat:crt ""
+```
 
 ## ライセンス
 

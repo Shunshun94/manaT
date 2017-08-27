@@ -1,9 +1,10 @@
 const express = require('express');
-
-const app = express();
+const fs = require('fs');
+const https = require('https');
 const ObjectService = require('./js/ObjectService.js');
 
 const service = new ObjectService();
+const app = express();;
 
 function errorReturn(e, req) {
 	var msg = e.toString();
@@ -103,6 +104,16 @@ app.get('/getCharacters', function (req, res) {
 	}
 });
 
-app.listen(process.env.npm_package_config_port, function () {
-  console.log('manaT listens on port ' + process.env.npm_package_config_port);
-});
+
+
+if(process.env.npm_package_config_key && process.env.npm_package_config_crt) {
+	https.createServer({
+		  key: fs.readFileSync(process.env.npm_package_config_key),
+		  cert: fs.readFileSync(process.env.npm_package_config_crt),
+		  passphrase: process.env.npm_package_config_passphrase
+		}, app).listen(process.env.npm_package_config_port);
+} else {
+	app.listen(process.env.npm_package_config_port, function () {
+		console.log('manaT listens on port ' + process.env.npm_package_config_port);
+	});  
+}
