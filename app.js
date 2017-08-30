@@ -1,108 +1,30 @@
 const express = require('express');
 const fs = require('fs');
 const https = require('https');
-const ObjectService = require('./js/ObjectService.js');
+const ManaTController = require('./js/ManaTController.js');
 
-const service = new ObjectService();
 const app = express();;
-
-function errorReturn(e, req) {
-	var msg = e.toString();
-	if(! msg.startsWith('Manat:')) {
-		return {result: 'まなてぃでエラーが発生しました' + msg + '\n' +
-			'よろしければ https://github.com/Shunshun94/manaT/issues にこのメッセージをコピペして起票するか @Shunshun94 に連絡してください。\n' +
-			req.originalUrl};
-	} else {
-		return {result: msg.replace('Manat:', '')};
-	}
-};
-
-function isAdminRequest(req) {
-	if(req.ip.endsWith('127.0.0.1')) {
-		return true;
-	}
-	throw 'Manat:管理者でないとこのコマンドは実行できません';
-};
+const controller = new ManaTController();
 
 
-app.get('/', function (req, res) {
-	res.jsonp({result: 'OK', message:'まなてぃは起動しています'});
-});
 
-app.get('/getAll', function (req, res) {
-	try {
-		isAdminRequest(req);
-		res.jsonp({result: 'OK', data: service.getAll(req)});
-	} catch (e) {
-		res.jsonp(errorReturn(e, req));
-	}
-});
+app.get('/', controller.isExsits);
 
-app.get('/removeAll', function (req, res) {
-	try {
-		isAdminRequest(req);
-		service.removeAll(req.query)
-		res.jsonp({result: 'OK'});
-	} catch (e) {
-		res.jsonp(errorReturn(e, req));
-	}
-});
+app.get('/getAll', controller.getAll);
 
+app.get('/removeAll', controller.removeAll);
 
-app.get('/addCharacter', function (req, res) {
-	try {
-		var character = service.addCharacter(req.query, service.generateTenantId(req));
-		res.jsonp({result: 'OK', data: character});
-	} catch (e) {
-		res.jsonp(errorReturn(e, req));
-	}
-});
+app.get('/addCharacter', controller.addCharacter);
 
-app.get('/changeCharacter', function (req, res) {
-	try {
-		var character = service.changeCharacter(req.query, service.generateTenantId(req));
-		res.jsonp({result: 'OK', data: character});
-	} catch (e) {
-		res.jsonp(errorReturn(e, req));
-	}
-});
+app.get('/changeCharacter', controller.changeCharacter);
 
-app.get('/updateCharacter', function (req, res) {
-	try {
-		var character = service.updateCharacter(req.query, service.generateTenantId(req));
-		res.jsonp({result: 'OK', data: character});
-	} catch (e) {
-		res.jsonp(errorReturn(e, req));
-	}
-});
+app.get('/updateCharacter', controller.updateCharacter);
 
-app.get('/removeCharacter', function (req, res) {
-	try {
-		service.removeCharacter(req.query, service.generateTenantId(req));
-		res.jsonp({result: 'OK'});
-	} catch (e) {
-		res.jsonp(errorReturn(e, req));
-	}
-});
+app.get('/removeCharacter', controller.removeCharacter);
 
-app.get('/getCharacter', function (req, res) {
-	try {
-		var character = service.getCharacter(req.query, service.generateTenantId(req));
-		res.jsonp({result: 'OK', data: character});
-	} catch (e) {
-		res.jsonp(errorReturn(e, req));
-	}
-});
+app.get('/getCharacter', controller.getCharacter);
 
-app.get('/getCharacters', function (req, res) {
-	try {
-		var characters = service.getCharacters(req.query, service.generateTenantId(req));
-		characters.result = 'OK';
-		res.jsonp(characters);
-	} catch (e) {
-		res.jsonp(errorReturn(e, req));
-	}
-});
+app.get('/getCharacters', controller.getCharacters);
 
 
 
