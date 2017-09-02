@@ -72,3 +72,4 @@ WebIF の内容を参考にしました。本アプリにはこの WebIF との�
 - [API](./api.md)
 - [データ管理のしくみ](./data.md)
 - [GitHub リポジトリ](https://github.com/Shunshun94/manaT)
+- [更新履歴](https://github.com/Shunshun94/manaT/releases)
