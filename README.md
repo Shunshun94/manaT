@@ -13,6 +13,9 @@ TRPG 向けのキャラクターをはじめとするオブジェクトストア
 
 ## どうやって起動するの
 
+[Releases](https://github.com/Shunshun94/manaT/releases) から最新版をダウンロードしてきて、展開。
+展開した後のディレクトリの中で以下を実行。
+
 ```
 npm install
 npm start
