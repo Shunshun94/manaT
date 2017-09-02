@@ -46,6 +46,35 @@ ManaTController.prototype.removeAll = function (req, res) {
 	}
 };
 
+ManaTController.prototype.DodontoFServer = function (req, res) {
+	try {
+		var unsupportedCommands = ["notSupportedCommand",
+		                           "getBusyInfo","getServerInfo","getRoomList",
+		                           "getLoginInfo","getLoginUserInfo","chat","talk",
+		                           "getChatColor","getRoomInfo","setRoomInfo",
+		                           "addMemo","changeMemo","addMessageCard","uploadImageData"];
+		var supportedCommands = {
+				'addCharacter': 'addCharacter',
+				'changeCharacter': 'changeCharacter',
+				'refresh': 'getCharacters'};
+		var command = req.query.webif;
+		if(command) {
+			if(unsupportedCommands.indexOf(command) > -1) {
+				res.jsonp({result: 'command [' + command + '] is NOT supported'});
+			} else if(supportedCommands[command]) {
+				var self = this;
+				this[supportedCommands[command]].apply(this, [req, res]);
+			} else {
+				res.jsonp({result: 'command [' + command + '] is NOT found'});
+			}
+		} else {
+			res.jsonp(['まなてぃは起動しています']);
+		}
+	} catch (e) {
+		res.jsonp(errorReturn(e, req));
+	}
+};
+
 ManaTController.prototype.addCharacter = function (req, res) {
 	try {
 		var character = service.addCharacter(req.query, service.generateTenantId(req));

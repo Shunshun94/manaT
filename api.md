@@ -421,6 +421,36 @@
 }
 ```
 
+## DodontoFServer.rb
+
+どどんとふの WEB IF との互換性のためにある機能です。
+
+### URL
+
+`/DodontoFServer.rb`
+
+### 引数
+
+必須 | パラメータ  | デフォルト値 | 例 | 説明
+----------- | ------------- | ----- | ----- | -----
+任 | `tenant` | 接続元の IP アドレス | `myService` | テナント名が入ります。テナントについては [データ管理のしくみ](./data.md) をご覧ください
+必 | `room` | - | `myRoom` | 部屋名です。任意の文字列が使えます。部屋については [データ管理のしくみ](./data.md) をご覧ください
+必 | `webif` | - | `refresh` | 実行するコマンドの名称です。どどんとふの WEB IF と同じものを利用します。どどんとふの WEB IF については [「どどんとふ」マニュアル](http://www.dodontof.com/DodontoF/README.html#aboutWebIf) をご覧ください
+
+他の引数については呼び出すコマンドを参照してください。
+
+### 呼び出せるコマンド
+
+`DodontoFServer.rb` はどどんとふのすべての WEB IF に対応しているわけではありません。
+対応については以下をご覧ください。
+
+webif 引数 | 呼び出されるコマンド | どんなコマンドか
+--- | --- | ---
+`addCharacter` | `addCharacter` | キャラクターを追加する
+`changeCharacter` | `changeCharacter` | キャラクターを更新する
+`refresh` | `getCharacters` | キャラクター一覧を取得する
+
+
 ## removeAll
 
 全テナントのデータを削除します。

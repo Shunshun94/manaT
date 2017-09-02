@@ -14,6 +14,8 @@ app.get('/getAll', controller.getAll);
 
 app.get('/removeAll', controller.removeAll);
 
+app.get('/DodontoFServer.rb', controller.DodontoFServer.bind(controller));
+
 app.get('/addCharacter', controller.addCharacter);
 
 app.get('/changeCharacter', controller.changeCharacter);
