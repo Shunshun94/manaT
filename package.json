@@ -1,6 +1,6 @@
 {
   "name": "manat",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Manager for Trpg characters' info",
   "keywords": ["TRPG", "character", "object", "store"],
   "license": "BSD-3-Clause",
@@ -16,7 +16,12 @@
     "url": "https://github.com/Shunshun94/manaT/issues"
   },
   "homepage": "https://github.com/Shunshun94/manaT",
-  "config": {"port": "3001"},
+  "config": {
+  	"port": "3001",
+  	"key": "",
+  	"crt": "",
+  	"passphrase": ""
+  },
   "dependencies": {
     "express": ">=4.15.4"
   }

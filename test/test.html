@@ -159,6 +159,13 @@ var tests = [
 ['キャラクター修正 (change 名前含む)', 'changeCharacter', {room: 1, targetName:'ひつじ', name:'ひつつーん', isHide:'12', counters: 'HP:1,MP:1', x:1, y:9, info: 'ひつじだよ'}, isCharacterSetupedWell],
 ['キャラクタ―追加の結果', 'getCharacters', {room: 1}, charactersCount2],
 
+['どどんとふ互換 存在しないコマンド', 'DodontoFServer.rb', {room: 1, webif:'not_found'}, isNG],
+['どどんとふ互換 非サポートコマンド', 'DodontoFServer.rb', {room: 1, webif:'notSupportedCommand'}, isNG],
+
+['どどんとふ互換 refresh', 'DodontoFServer.rb', {room: 1, webif:'refresh'}, charactersCount2],
+['どどんとふ互換 addCharacter', 'addCharacter', {room: 1, name:'こひつじ', isHide:'12', counters: 'HP:1,MP:1', x:1, y:9, info: 'ひつじだよ'}, isCharacterSetupedWell],
+['どどんとふ互換 changeCharacter', 'changeCharacter', {room: 1, targetName:'こひつじ', name:'ひつつーん！', isHide:'', counters: 'HP:8,MP:8', x:8, y:8, info: 'ひつじなの！'}, isCharacterUpdatedWellWithoutName],
+
 ['パスワードがない部屋へのパスワードを付けての入室', 'getCharacters', {room: 1, password: 'dummy'}],
 ['パスワードがある部屋の作成 (見学不可)', 'getCharacters', {room: 2, password: 'dummy'}],
 ['パスワードが間違った場合 (見学不可)', 'getCharacters', {room: 2, password: 'invalidPass'}, isNG],
