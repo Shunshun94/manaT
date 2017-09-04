@@ -223,9 +223,64 @@ ObjectService.prototype.getCharacters = function(query, tenantId) {
 		}
 	} else {
 		return this.objectDAO.getCharacters(time, tenantId, query.room);
-		}
+	}
 };
 
+ObjectService.prototype.addMemo = function(query, tenantId) {
+	this.queryValidation(query, ['room', 'message']);
+	
+	var memo = {
+		type: 'memo',
+		imgId: 'memo_' + (new Date()).getTime(),
+		message: query.message
+	};
+	
+	if(query.password) {
+		var password = this.hash(query.password + tenantId);
+		if(query.isVisitable) {
+			return this.objectDAO.addMemo(memo, tenantId, query.room, password, query.isVisitable);
+		} else {
+			return this.objectDAO.addMemo(memo, tenantId, query.room, password);
+		}
+	} else {
+		return this.objectDAO.addMemo(memo, tenantId, query.room);
+	}
+};
+
+ObjectService.prototype.changeMemo = function(query, tenantId) {
+	this.queryValidation(query, ['room', 'targetId', 'message']);
+	
+	var memo = {
+		imgId: 'memo_' + (new Date()).getTime(),
+		message: query.message
+	};
+	
+	if(query.password) {
+		var password = this.hash(query.password + tenantId);
+		if(query.isVisitable) {
+			return this.objectDAO.changeMemo(memo, tenantId, query.room, password, query.isVisitable);
+		} else {
+			return this.objectDAO.changeMemo(memo, tenantId, query.room, password);
+		}
+	} else {
+		return this.objectDAO.changeMemo(memo, tenantId, query.room);
+	}
+};
+
+ObjectService.prototype.getMemos = function(query, tenantId) {
+	this.queryValidation(query, ['room']);
+	var time = query.characters || query.lastUpdateTime || query.lastUpdate || 0;
+	if(query.password) {
+		var password = this.hash(query.password + tenantId);
+		if(query.isVisitable) {
+			return this.objectDAO.getMemos(time, tenantId, query.room, password, query.isVisitable);
+		} else {
+			return this.objectDAO.getMemos(time, tenantId, query.room, password);
+		}
+	} else {
+		return this.objectDAO.getMemos(time, tenantId, query.room);
+	}
+};
 
 
 module.exports = ObjectService;

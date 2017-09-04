@@ -28,6 +28,12 @@ app.get('/getCharacter', controller.getCharacter);
 
 app.get('/getCharacters', controller.getCharacters);
 
+app.get('/addMemo', controller.addMemo);
+
+app.get('/changeMemo', controller.changeMemo);
+
+app.get('/getMemos', controller.getMemos);
+
 
 
 if(process.env.npm_package_config_key && process.env.npm_package_config_crt) {
