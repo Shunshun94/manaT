@@ -130,4 +130,16 @@ ManaTController.prototype.getCharacters = function (req, res) {
 	}
 };
 
+ManaTController.prototype.refresh = function(req, res) {
+	const targetList = {
+			characters: {method: 'getCharacters', lastUpdate: 'characters', key: 'characters'},
+			map: {method: 'getMap', lastUpdate: 'map', key: 'mapData'},
+			// time: {method: 'getTime', lastUpdate: 'time'},
+			// effects:  {method: 'getEffects', lastUpdate: 'effects'},
+			// roomInfo:  {method: 'getRoomInfo', lastUpdate: 'playRoomInfo'},
+			// chat: {method: 'getChatDummy', lastUpdate:'chatMesageDatalog'},
+			// 
+	};
+};
+
 module.exports = ManaTController;

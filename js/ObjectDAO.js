@@ -14,7 +14,7 @@ ObjectDAO.prototype.getTenant = function(tenantId) {
 ObjectDAO.prototype.getRoom = function(tenantId, roomId, opt_password, opt_visitable) {
 	var tenant = this.getTenant(tenantId);
 	if(! Boolean(tenant.rooms[roomId])) {
-		tenant.rooms[roomId] = {objects: {}};
+		tenant.rooms[roomId] = this.getPlainRoom();
 		if(opt_password) {
 			tenant.rooms[roomId].password = opt_password;
 			if(opt_visitable) {
@@ -24,6 +24,16 @@ ObjectDAO.prototype.getRoom = function(tenantId, roomId, opt_password, opt_visit
 	}
 	tenant.rooms[roomId].lastAccess = (new Date()).getTime();
 	return tenant.rooms[roomId];	
+};
+
+ObjectDAO.prototype.getPlainRoom = function() {
+	return {
+		objects: {},
+		map: {
+			imageSource: 'https://shunshun94.github.io/manaT/images/background.jpg',
+			xMax: 32,
+			yMax: 18
+		}};
 };
 
 ObjectDAO.prototype.getHashedPassword = function(tenantId, roomId) {
