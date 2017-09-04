@@ -132,7 +132,7 @@ ManaTController.prototype.getCharacters = function (req, res) {
 
 ManaTController.prototype.addMemo = function (req, res) {
 	try {
-		var memo = service.addCharacter(req.query, service.generateTenantId(req));
+		var memo = service.addMemo(req.query, service.generateTenantId(req));
 		res.jsonp({result: 'OK', data: memo});
 	} catch (e) {
 		res.jsonp(errorReturn(e, req));

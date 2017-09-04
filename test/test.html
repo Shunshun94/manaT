@@ -38,33 +38,21 @@ function isExist(result) {
 	}
 }
 
-function charactersCount0(result) {
-	var expected = 0;
+function checkExpectedCount(target, expected) {
 	return {
-		result: result.characters.length === expected ? 'OK' : '予定と人数が違う actual:' + result.characters.length + ' / expected:' + expected
-	} 
+		result: target.length === expected ? 'OK' : '予定と人数が違う actual:' + target.length + ' / expected:' + expected
+	};
 }
 
-function charactersCount1(result) {
-	var expected = 1;
-	return {
-		result: result.characters.length === expected ? 'OK' : '予定と人数が違う actual:' + result.characters.length + ' / expected:' + expected
-	} 
-}
+function charactersCount0(result) {return checkExpectedCount(result.characters, 0);}
+function charactersCount1(result) {return checkExpectedCount(result.characters, 1);}
+function charactersCount2(result) {return checkExpectedCount(result.characters, 2);}
+function charactersCount3(result) {return checkExpectedCount(result.characters, 3);}
 
-function charactersCount2(result) {
-	var expected = 2;
-	return {
-		result: result.characters.length === expected ? 'OK' : '予定と人数が違う actual:' + result.characters.length + ' / expected:' + expected
-	} 
-}
-
-function charactersCount3(result) {
-	var expected = 3;
-	return {
-		result: result.characters.length === expected ? 'OK' : '予定と人数が違う actual:' + result.characters.length + ' / expected:' + expected
-	} 
-}
+function memoCount0(result) {return checkExpectedCount(result.memos, 0);}
+function memoCount1(result) {return checkExpectedCount(result.memos, 1);}
+function memoCount2(result) {return checkExpectedCount(result.memos, 2);}
+function memoCount3(result) {return checkExpectedCount(result.memos, 3);}
 
 function isCharacterSetupedWell(result) {
 	var counters = {HP: 1, MP: 1, LOVE:undefined};
@@ -165,6 +153,13 @@ var tests = [
 ['どどんとふ互換 refresh', 'DodontoFServer.rb', {room: 1, webif:'refresh'}, charactersCount2],
 ['どどんとふ互換 addCharacter', 'addCharacter', {room: 1, name:'こひつじ', isHide:'12', counters: 'HP:1,MP:1', x:1, y:9, info: 'ひつじだよ'}, isCharacterSetupedWell],
 ['どどんとふ互換 changeCharacter', 'changeCharacter', {room: 1, targetName:'こひつじ', name:'ひつつーん！', isHide:'', counters: 'HP:8,MP:8', x:8, y:8, info: 'ひつじなの！'}, isCharacterUpdatedWellWithoutName],
+
+['メモ一覧取得 (ない)', 'getMemos', {room: 1}, memoCount0],
+['メモ追加', 'addMemo', {room: 1, message:'ひよこ'}],
+['メモ追加はキャラクター一覧に影響がない', 'getCharacters', {room: 1}, charactersCount3],
+['メモ追加', 'addMemo', {room: 1, message:'ひつじ'}],
+['メモ一覧取得 (2件)', 'getMemos', {room: 1}, memoCount2],
+
 
 ['パスワードがない部屋へのパスワードを付けての入室', 'getCharacters', {room: 1, password: 'dummy'}],
 ['パスワードがある部屋の作成 (見学不可)', 'getCharacters', {room: 2, password: 'dummy'}],

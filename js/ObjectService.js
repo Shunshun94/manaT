@@ -232,7 +232,12 @@ ObjectService.prototype.addMemo = function(query, tenantId) {
 	var memo = {
 		type: 'memo',
 		imgId: 'memo_' + (new Date()).getTime(),
-		message: query.message
+		message: query.message,
+		rotation:this.numberlize(query.rotation),
+		draggable:this.boolealize(query.draggable, true),
+		y:this.numberlize(query.y),
+		x:this.numberlize(query.x),
+		width:this.numberlize(query.x, 1)
 	};
 	
 	if(query.password) {
@@ -251,7 +256,7 @@ ObjectService.prototype.changeMemo = function(query, tenantId) {
 	this.queryValidation(query, ['room', 'targetId', 'message']);
 	
 	var memo = {
-		imgId: 'memo_' + (new Date()).getTime(),
+		imgId: query.targetId,
 		message: query.message
 	};
 	
