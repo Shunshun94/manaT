@@ -170,8 +170,8 @@ ManaTController.prototype.getMemos = function (req, res) {
 
 ManaTController.prototype.refresh = function(req, res) {
 	const targetList = {
-			characters: {method: 'getCharacters', lastUpdate: 'characters', key: 'characters'},
-			//map: {method: 'getMap', lastUpdate: 'map', key: 'mapData'},
+			characters: {method: 'getObjects', lastUpdate: 'characters', key: 'characters'},
+			map: {method: 'getMap', lastUpdate: 'map', key: 'mapData'},
 			// time: {method: 'getTime', lastUpdate: 'time'},
 			// effects:  {method: 'getEffects', lastUpdate: 'effects'},
 			// roomInfo:  {method: 'getRoomInfo', lastUpdate: 'playRoomInfo'},
@@ -179,14 +179,14 @@ ManaTController.prototype.refresh = function(req, res) {
 			// 
 	};
 	
-	var values = {lastUpdateTimes: {}, result: 'OK'};
+	var values = {lastUpdateTimes: {}, graveyard:[], result: 'OK'};
 	var tenantId = service.generateTenantId(req);
 	var query = req.query;
 	
 	for(var key in targetList) {
 		if(query[key]) {
 			var tempResult = service[targetList[key].method](query, tenantId);
-			values[targetList[key].key] = tempResult[key];
+			values[targetList[key].key] = tempResult[targetList[key].key];
 			values.lastUpdateTimes[targetList[key].lastUpdate] = tempResult.lastUpdateTimes[targetList[key].lastUpdate];
 		}
 	}

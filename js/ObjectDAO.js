@@ -155,6 +155,13 @@ ObjectDAO.prototype.removeObject = function(targetName, notFoundMessage, tenantI
 	}
 };
 
+ObjectDAO.prototype.getMap = function(time, tenantId, roomId, opt_password, opt_isVisitable, opt_filter) {
+	var filter = opt_filter || function(){return true};
+	var room = this.getRoom(tenantId, roomId, opt_password, opt_isVisitable);
+	this.isPermitted(tenantId, roomId, opt_password, true);
+	return {mapData: room.map, lastUpdateTimes: {map: room.lastUpdate}};
+};
+
 ObjectDAO.prototype.getObjects = function(time, tenantId, roomId, opt_password, opt_isVisitable, opt_filter) {
 	var filter = opt_filter || function(){return true};
 	var room = this.getRoom(tenantId, roomId, opt_password, opt_isVisitable);

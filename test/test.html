@@ -48,6 +48,7 @@ function charactersCount0(result) {return checkExpectedCount(result.characters, 
 function charactersCount1(result) {return checkExpectedCount(result.characters, 1);}
 function charactersCount2(result) {return checkExpectedCount(result.characters, 2);}
 function charactersCount3(result) {return checkExpectedCount(result.characters, 3);}
+function charactersCount5(result) {return checkExpectedCount(result.characters, 5);}
 
 function memoCount0(result) {return checkExpectedCount(result.memos, 0);}
 function memoCount1(result) {return checkExpectedCount(result.memos, 1);}
@@ -183,6 +184,7 @@ var tests = [
 ['メモ一覧取得 (3件)', 'getMemos', {room: 1}, memoCount3],
 ['メモ削除 (ひよこのこ)', 'removeMemo', {room: 1, targetId:'ひよこのこ'}],
 ['メモ一覧取得 (2件)', 'getMemos', {room: 1}, memoCount2],
+['どどんとふ互換 refresh でメモも含めて取得', 'DodontoFServer.rb', {room: 1, webif:'refresh', characters:0, map:0}, charactersCount5],
 
 ['パスワードがない部屋へのパスワードを付けての入室', 'getCharacters', {room: 1, password: 'dummy'}],
 ['パスワードがある部屋の作成 (見学不可)', 'getCharacters', {room: 2, password: 'dummy'}],
