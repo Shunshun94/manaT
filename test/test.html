@@ -168,7 +168,7 @@ var tests = [
 ['どどんとふ互換 存在しないコマンド', 'DodontoFServer.rb', {room: 1, webif:'not_found'}, isNG],
 ['どどんとふ互換 非サポートコマンド', 'DodontoFServer.rb', {room: 1, webif:'notSupportedCommand'}, isNG],
 
-['どどんとふ互換 refresh', 'DodontoFServer.rb', {room: 1, webif:'refresh'}, charactersCount2],
+['どどんとふ互換 refresh', 'DodontoFServer.rb', {room: 1, webif:'refresh', characters:1, map:1}, charactersCount2],
 ['どどんとふ互換 addCharacter', 'addCharacter', {room: 1, name:'こひつじ', isHide:'12', counters: 'HP:1,MP:1', x:1, y:9, info: 'ひつじだよ'}, isCharacterSetupedWell],
 ['どどんとふ互換 changeCharacter', 'changeCharacter', {room: 1, targetName:'こひつじ', name:'ひつつーん！', isHide:'', counters: 'HP:8,MP:8', x:8, y:8, info: 'ひつじなの！'}, isCharacterUpdatedWellWithoutName],
 

@@ -52,11 +52,13 @@ ManaTController.prototype.DodontoFServer = function (req, res) {
 		                           "getBusyInfo","getServerInfo","getRoomList",
 		                           "getLoginInfo","getLoginUserInfo","chat","talk",
 		                           "getChatColor","getRoomInfo","setRoomInfo",
-		                           "addMemo","changeMemo","addMessageCard","uploadImageData"];
+		                           "addMessageCard","uploadImageData"];
 		var supportedCommands = {
 				'addCharacter': 'addCharacter',
 				'changeCharacter': 'changeCharacter',
-				'refresh': 'getCharacters'};
+				"addMemo": "addMemo",
+				"changeMemo": "changeMemo",
+				'refresh': 'refresh'};//'getCharacters'};
 		var command = req.query.webif;
 		if(command) {
 			if(unsupportedCommands.indexOf(command) > -1) {
@@ -169,13 +171,26 @@ ManaTController.prototype.getMemos = function (req, res) {
 ManaTController.prototype.refresh = function(req, res) {
 	const targetList = {
 			characters: {method: 'getCharacters', lastUpdate: 'characters', key: 'characters'},
-			map: {method: 'getMap', lastUpdate: 'map', key: 'mapData'},
+			//map: {method: 'getMap', lastUpdate: 'map', key: 'mapData'},
 			// time: {method: 'getTime', lastUpdate: 'time'},
 			// effects:  {method: 'getEffects', lastUpdate: 'effects'},
 			// roomInfo:  {method: 'getRoomInfo', lastUpdate: 'playRoomInfo'},
 			// chat: {method: 'getChatDummy', lastUpdate:'chatMesageDatalog'},
 			// 
 	};
+	
+	var values = {lastUpdateTimes: {}, result: 'OK'};
+	var tenantId = service.generateTenantId(req);
+	var query = req.query;
+	
+	for(var key in targetList) {
+		if(query[key]) {
+			var tempResult = service[targetList[key].method](query, tenantId);
+			values[targetList[key].key] = tempResult[key];
+			values.lastUpdateTimes[targetList[key].lastUpdate] = tempResult.lastUpdateTimes[targetList[key].lastUpdate];
+		}
+	}
+	res.jsonp(values);
 };
 
 module.exports = ManaTController;
