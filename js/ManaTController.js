@@ -130,4 +130,40 @@ ManaTController.prototype.getCharacters = function (req, res) {
 	}
 };
 
+ManaTController.prototype.addMemo = function (req, res) {
+	try {
+		var memo = service.addMemo(req.query, service.generateTenantId(req));
+		res.jsonp({result: 'OK', data: memo});
+	} catch (e) {
+		res.jsonp(errorReturn(e, req));
+	}
+};
+
+ManaTController.prototype.changeMemo = function (req, res) {
+	try {
+		var memo = service.changeMemo(req.query, service.generateTenantId(req));
+		res.jsonp({result: 'OK', data: memo});
+	} catch (e) {
+		res.jsonp(errorReturn(e, req));
+	}
+};
+
+ManaTController.prototype.removeMemo = function (req, res) {
+	try {
+		service.removeMemo(req.query, service.generateTenantId(req));
+		res.jsonp({result: 'OK'});
+	} catch (e) {
+		res.jsonp(errorReturn(e, req));
+	}
+};
+
+ManaTController.prototype.getMemos = function (req, res) {
+	try {
+		var memos = service.getMemos(req.query, service.generateTenantId(req));
+		res.jsonp({result: 'OK', memos: memos});
+	} catch (e) {
+		res.jsonp(errorReturn(e, req));
+	}
+};
+
 module.exports = ManaTController;

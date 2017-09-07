@@ -114,14 +114,7 @@ ObjectDAO.prototype.updateCharacter = function(characterData, tenantId, roomId, 
 };
 
 ObjectDAO.prototype.removeCharacter = function(targetName, tenantId, roomId, opt_password, opt_isVisitable) {
-	var room = this.getRoom(tenantId, roomId, opt_password, opt_isVisitable);
-	this.isPermitted(tenantId, roomId, opt_password);
-	if(room.objects[targetName]) {
-		delete room.objects[targetName];
-		room.lastUpdate = (new Date()).getTime();
-	} else {
-		throw 'Manat:「' + targetName + '」という名前のキャラクターは存在しません'
-	}
+	return this.removeObject(targetName, '「' + targetName + '」という名前のキャラクターは存在しません', tenantId, roomId, opt_password, opt_isVisitable);
 };
 
 ObjectDAO.prototype.getCharacter = function(targetName, tenantId, roomId, opt_password, opt_isVisitable) {
@@ -141,6 +134,17 @@ ObjectDAO.prototype.getCharacters = function(time, tenantId, roomId, opt_passwor
 	return result;
 };
 
+ObjectDAO.prototype.removeObject = function(targetName, notFoundMessage, tenantId, roomId, opt_password, opt_isVisitable) {
+	var room = this.getRoom(tenantId, roomId, opt_password, opt_isVisitable);
+	this.isPermitted(tenantId, roomId, opt_password);
+	if(room.objects[targetName]) {
+		delete room.objects[targetName];
+		room.lastUpdate = (new Date()).getTime();
+	} else {
+		throw 'Manat:' + notFoundMessage;
+	}
+};
+
 ObjectDAO.prototype.getObjects = function(time, tenantId, roomId, opt_password, opt_isVisitable, opt_filter) {
 	var filter = opt_filter || function(){return true};
 	var room = this.getRoom(tenantId, roomId, opt_password, opt_isVisitable);
@@ -155,6 +159,44 @@ ObjectDAO.prototype.getObjects = function(time, tenantId, roomId, opt_password, 
 	
 	return {characters: result, lastUpdateTimes: {characters: room.lastUpdate}};
 };
+
+ObjectDAO.prototype.addMemo = function(memo, tenantId, roomId, opt_password, opt_isVisitable) {
+	var room = this.getRoom(tenantId, roomId, opt_password, opt_isVisitable);
+	this.isPermitted(tenantId, roomId, opt_password);
+	if(room.objects[memo.imgId]) {
+		throw 'Manat:メモの追加に失敗しました。memo の ID が重複しています"' + memo.imgId + '"';
+	}
+	room.objects[memo.imgId] = memo;
+	room.objects[memo.imgId].lastUpdate = (new Date()).getTime();
+	room.lastUpdate = (new Date()).getTime();
+	
+	return room.objects[memo.imgId];
+};
+
+ObjectDAO.prototype.changeMemo = function(memo, tenantId, roomId, opt_password, opt_isVisitable) {
+	var room = this.getRoom(tenantId, roomId, opt_password, opt_isVisitable);
+	this.isPermitted(tenantId, roomId, opt_password);
+	if(! Boolean(room.objects[memo.imgId])) {
+		throw 'Manat:「' + memo.imgId + '」が見つかりませんでした';
+	}
+	room.objects[memo.imgId].message = memo.message;
+	room.objects[memo.imgId].lastUpdate = (new Date()).getTime();
+	room.lastUpdate = (new Date()).getTime();
+	
+	return room.objects[memo.imgId];
+};
+
+ObjectDAO.prototype.removeMemo = function(targetName, tenantId, roomId, opt_password, opt_isVisitable) {
+	return this.removeObject(targetName, '「' + targetName + '」が見つかりませんでした', tenantId, roomId, opt_password, opt_isVisitable);
+};
+
+ObjectDAO.prototype.getMemos = function(time, tenantId, roomId, opt_password, opt_isVisitable, opt_filter) {
+	var result = this.getObjects(time, tenantId, roomId, opt_password, opt_isVisitable, function(character) {
+		return character.type === 'memo';
+	});
+	return result.characters;
+};
+
 
 ObjectDAO.prototype.getAll = function() {
 	return this.store;
