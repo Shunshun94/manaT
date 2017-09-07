@@ -32,6 +32,8 @@ app.get('/addMemo', controller.addMemo);
 
 app.get('/changeMemo', controller.changeMemo);
 
+app.get('/removeMemo', controller.removeMemo);
+
 app.get('/getMemos', controller.getMemos);
 
 

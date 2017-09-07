@@ -54,6 +54,24 @@ function memoCount1(result) {return checkExpectedCount(result.memos, 1);}
 function memoCount2(result) {return checkExpectedCount(result.memos, 2);}
 function memoCount3(result) {return checkExpectedCount(result.memos, 3);}
 
+function isIncludedTitleHiyokonoko(result) {
+	if(result.memos.filter(function(memo) {
+		return memo.imgId === 'ひよこのこ';
+	}).length) {
+		return {result: 'OK'};
+	} else {
+		return {result: 'ひよこのこがいない'};
+	}
+};
+
+function isIncludedBodyHiyokonoko(result) {
+	if(result.data.message === 'ひよこのこ') {
+		return {result: 'OK'};
+	} else {
+		return {result: 'ひよこのこがいない'};
+	}
+};
+
 function isCharacterSetupedWell(result) {
 	var counters = {HP: 1, MP: 1, LOVE:undefined};
 	var resultData = {x:1, y:9, info: 'ひつじだよ', isHide: true};
@@ -159,7 +177,12 @@ var tests = [
 ['メモ追加はキャラクター一覧に影響がない', 'getCharacters', {room: 1}, charactersCount3],
 ['メモ追加', 'addMemo', {room: 1, message:'ひつじ'}],
 ['メモ一覧取得 (2件)', 'getMemos', {room: 1}, memoCount2],
-
+['メモ追加', 'addMemo', {room: 1, message:'ひよこ', name:'ひよこのこ'}],
+['メモ一覧取得 (ひよこのこ)', 'getMemos', {room: 1}, isIncludedTitleHiyokonoko],
+['メモ更新 (ひよこのこ)', 'changeMemo', {room: 1, targetId:'ひよこのこ', message:'ひよこのこ'}, isIncludedBodyHiyokonoko],
+['メモ一覧取得 (3件)', 'getMemos', {room: 1}, memoCount3],
+['メモ削除 (ひよこのこ)', 'removeMemo', {room: 1, targetId:'ひよこのこ'}],
+['メモ一覧取得 (2件)', 'getMemos', {room: 1}, memoCount2],
 
 ['パスワードがない部屋へのパスワードを付けての入室', 'getCharacters', {room: 1, password: 'dummy'}],
 ['パスワードがある部屋の作成 (見学不可)', 'getCharacters', {room: 2, password: 'dummy'}],

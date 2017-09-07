@@ -17,8 +17,16 @@ ObjectService.prototype.generateTenantId = function(request) {
 
 ObjectService.prototype.queryValidation = function(query, required) {
 	required.forEach(function(word) {
-		if(! Boolean(query[word])) {
-			throw 'Manat:引数「' + word + '」がありません。';
+		if(Array.isArray(word)) {
+			if(word.filter(function(part){
+				return query[part];
+			}).length === 0) {
+				throw 'Manat:引数「' + word.join('」「') + '」のいずれもありません。';
+			}
+		} else {
+			if(! Boolean(query[word])) {
+				throw 'Manat:引数「' + word + '」がありません。';
+			}
 		}
 	});
 	return true;
@@ -231,7 +239,7 @@ ObjectService.prototype.addMemo = function(query, tenantId) {
 	
 	var memo = {
 		type: 'memo',
-		imgId: 'memo_' + (new Date()).getTime(),
+		imgId: query.name || query.imgId || 'memo_' + (new Date()).getTime(),
 		message: query.message,
 		rotation:this.numberlize(query.rotation),
 		draggable:this.boolealize(query.draggable, true),
@@ -253,10 +261,10 @@ ObjectService.prototype.addMemo = function(query, tenantId) {
 };
 
 ObjectService.prototype.changeMemo = function(query, tenantId) {
-	this.queryValidation(query, ['room', 'targetId', 'message']);
+	this.queryValidation(query, ['room', ['targetId', 'targetName', 'imgId'], 'message']);
 	
 	var memo = {
-		imgId: query.targetId,
+		imgId: query.targetId || query.targetName || query.imgId,
 		message: query.message
 	};
 	
@@ -269,6 +277,24 @@ ObjectService.prototype.changeMemo = function(query, tenantId) {
 		}
 	} else {
 		return this.objectDAO.changeMemo(memo, tenantId, query.room);
+	}
+};
+
+
+ObjectService.prototype.removeMemo = function(query, tenantId) {
+	this.queryValidation(query, ['room', ['targetId', 'targetName', 'imgId']]);
+	
+	var imgId = query.targetId || query.targetName || query.imgId;
+	
+	if(query.password) {
+		var password = this.hash(query.password + tenantId);
+		if(query.isVisitable) {
+			return this.objectDAO.removeMemo(imgId, tenantId, query.room, password, query.isVisitable);
+		} else {
+			return this.objectDAO.removeMemo(imgId, tenantId, query.room, password);
+		}
+	} else {
+		return this.objectDAO.removeMemo(imgId, tenantId, query.room);
 	}
 };
 

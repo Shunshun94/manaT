@@ -148,6 +148,15 @@ ManaTController.prototype.changeMemo = function (req, res) {
 	}
 };
 
+ManaTController.prototype.removeMemo = function (req, res) {
+	try {
+		service.removeMemo(req.query, service.generateTenantId(req));
+		res.jsonp({result: 'OK'});
+	} catch (e) {
+		res.jsonp(errorReturn(e, req));
+	}
+};
+
 ManaTController.prototype.getMemos = function (req, res) {
 	try {
 		var memos = service.getMemos(req.query, service.generateTenantId(req));
