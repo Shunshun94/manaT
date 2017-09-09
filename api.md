@@ -727,6 +727,8 @@ webif 引数 | 呼び出されるコマンド | どんなコマンドか
 --- | --- | ---
 `addCharacter` | `addCharacter` | キャラクターを追加する
 `changeCharacter` | `changeCharacter` | キャラクターを更新する
+`addMemo` | `addMemo` | メモを追加する
+`changeMemo` | `changeMemo` | メモを更新する
 `refresh` | `refresh` | 部屋の各種情報を一括して取得する
 
 ## removeAll
