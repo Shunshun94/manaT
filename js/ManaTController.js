@@ -166,7 +166,25 @@ ManaTController.prototype.getMemos = function (req, res) {
 	} catch (e) {
 		res.jsonp(errorReturn(e, req));
 	}
-}
+};
+
+ManaTController.prototype.getMap = function (req, res) {
+	try {
+		var map = service.getMap(req.query, service.generateTenantId(req));
+		res.jsonp({result: 'OK', mapData: map});
+	} catch (e) {
+		res.jsonp(errorReturn(e, req));
+	}
+};
+
+ManaTController.prototype.setMap = function (req, res) {
+	try {
+		var map = service.setMap(req.query, service.generateTenantId(req));
+		res.jsonp({result: 'OK', mapData: map});
+	} catch (e) {
+		res.jsonp(errorReturn(e, req));
+	}
+};
 
 ManaTController.prototype.refresh = function(req, res) {
 	const targetList = {
@@ -179,7 +197,11 @@ ManaTController.prototype.refresh = function(req, res) {
 			// 
 	};
 	
-	var values = {lastUpdateTimes: {}, graveyard:[], result: 'OK'};
+	var values = {
+		lastUpdateTimes: {},
+		graveyard:[], // TODO implement
+		result: 'OK'
+	};
 	var tenantId = service.generateTenantId(req);
 	var query = req.query;
 	

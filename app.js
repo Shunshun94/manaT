@@ -36,6 +36,9 @@ app.get('/removeMemo', controller.removeMemo);
 
 app.get('/getMemos', controller.getMemos);
 
+app.get('/getMap', controller.getMap);
+
+app.get('/setMap', controller.setMap);
 
 
 if(process.env.npm_package_config_key && process.env.npm_package_config_crt) {
