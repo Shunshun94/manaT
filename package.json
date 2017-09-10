@@ -5,7 +5,8 @@
   "keywords": ["TRPG", "character", "object", "store"],
   "license": "BSD-3-Clause",
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "dump": "curl http://127.0.0.1:3001/getAll > dump || curl https://127.0.0.1:3001/getAll -k > dump"
   },
   "repository": {
     "type": "git",
