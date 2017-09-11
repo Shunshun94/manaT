@@ -1,6 +1,6 @@
 {
   "name": "manat",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Manager for Trpg characters' info",
   "keywords": ["TRPG", "character", "object", "store"],
   "license": "BSD-3-Clause",
