@@ -1,11 +1,12 @@
 {
   "name": "manat",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Manager for Trpg characters' info",
   "keywords": ["TRPG", "character", "object", "store"],
   "license": "BSD-3-Clause",
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "dump": "curl http://127.0.0.1:$npm_package_config_port/getAll > dump_$(date +'%s') || curl https://127.0.0.1:$npm_package_config_port/getAll -k > dump_$(date +'%s')"
   },
   "repository": {
     "type": "git",

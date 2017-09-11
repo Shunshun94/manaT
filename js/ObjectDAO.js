@@ -14,7 +14,7 @@ ObjectDAO.prototype.getTenant = function(tenantId) {
 ObjectDAO.prototype.getRoom = function(tenantId, roomId, opt_password, opt_visitable) {
 	var tenant = this.getTenant(tenantId);
 	if(! Boolean(tenant.rooms[roomId])) {
-		tenant.rooms[roomId] = {objects: {}};
+		tenant.rooms[roomId] = this.getPlainRoom();
 		if(opt_password) {
 			tenant.rooms[roomId].password = opt_password;
 			if(opt_visitable) {
@@ -24,6 +24,16 @@ ObjectDAO.prototype.getRoom = function(tenantId, roomId, opt_password, opt_visit
 	}
 	tenant.rooms[roomId].lastAccess = (new Date()).getTime();
 	return tenant.rooms[roomId];	
+};
+
+ObjectDAO.prototype.getPlainRoom = function() {
+	return {
+		objects: {},
+		map: {
+			imageSource: 'https://shunshun94.github.io/manaT/images/background.jpg',
+			xMax: 32,
+			yMax: 18
+		}};
 };
 
 ObjectDAO.prototype.getHashedPassword = function(tenantId, roomId) {
@@ -114,14 +124,7 @@ ObjectDAO.prototype.updateCharacter = function(characterData, tenantId, roomId, 
 };
 
 ObjectDAO.prototype.removeCharacter = function(targetName, tenantId, roomId, opt_password, opt_isVisitable) {
-	var room = this.getRoom(tenantId, roomId, opt_password, opt_isVisitable);
-	this.isPermitted(tenantId, roomId, opt_password);
-	if(room.objects[targetName]) {
-		delete room.objects[targetName];
-		room.lastUpdate = (new Date()).getTime();
-	} else {
-		throw 'Manat:「' + targetName + '」という名前のキャラクターは存在しません'
-	}
+	return this.removeObject(targetName, '「' + targetName + '」という名前のキャラクターは存在しません', tenantId, roomId, opt_password, opt_isVisitable);
 };
 
 ObjectDAO.prototype.getCharacter = function(targetName, tenantId, roomId, opt_password, opt_isVisitable) {
@@ -141,6 +144,32 @@ ObjectDAO.prototype.getCharacters = function(time, tenantId, roomId, opt_passwor
 	return result;
 };
 
+ObjectDAO.prototype.removeObject = function(targetName, notFoundMessage, tenantId, roomId, opt_password, opt_isVisitable) {
+	var room = this.getRoom(tenantId, roomId, opt_password, opt_isVisitable);
+	this.isPermitted(tenantId, roomId, opt_password);
+	if(room.objects[targetName]) {
+		delete room.objects[targetName];
+		room.lastUpdate = (new Date()).getTime();
+	} else {
+		throw 'Manat:' + notFoundMessage;
+	}
+};
+
+ObjectDAO.prototype.getMap = function(time, tenantId, roomId, opt_password, opt_isVisitable, opt_filter) {
+	var room = this.getRoom(tenantId, roomId, opt_password, opt_isVisitable);
+	this.isPermitted(tenantId, roomId, opt_password, true);
+	return {mapData: room.map, lastUpdateTimes: {map: room.lastUpdate}};
+};
+
+ObjectDAO.prototype.setMap = function(map, tenantId, roomId, opt_password, opt_isVisitable, opt_filter) {
+	var room = this.getRoom(tenantId, roomId, opt_password, opt_isVisitable);
+	this.isPermitted(tenantId, roomId, opt_password);
+	for(var key in map) {
+		room.map[key] = map[key];
+	}
+	return room.map;
+};
+
 ObjectDAO.prototype.getObjects = function(time, tenantId, roomId, opt_password, opt_isVisitable, opt_filter) {
 	var filter = opt_filter || function(){return true};
 	var room = this.getRoom(tenantId, roomId, opt_password, opt_isVisitable);
@@ -156,6 +185,44 @@ ObjectDAO.prototype.getObjects = function(time, tenantId, roomId, opt_password, 
 	return {characters: result, lastUpdateTimes: {characters: room.lastUpdate}};
 };
 
+ObjectDAO.prototype.addMemo = function(memo, tenantId, roomId, opt_password, opt_isVisitable) {
+	var room = this.getRoom(tenantId, roomId, opt_password, opt_isVisitable);
+	this.isPermitted(tenantId, roomId, opt_password);
+	if(room.objects[memo.imgId]) {
+		throw 'Manat:メモの追加に失敗しました。memo の ID が重複しています"' + memo.imgId + '"';
+	}
+	room.objects[memo.imgId] = memo;
+	room.objects[memo.imgId].lastUpdate = (new Date()).getTime();
+	room.lastUpdate = (new Date()).getTime();
+	
+	return room.objects[memo.imgId];
+};
+
+ObjectDAO.prototype.changeMemo = function(memo, tenantId, roomId, opt_password, opt_isVisitable) {
+	var room = this.getRoom(tenantId, roomId, opt_password, opt_isVisitable);
+	this.isPermitted(tenantId, roomId, opt_password);
+	if(! Boolean(room.objects[memo.imgId])) {
+		throw 'Manat:「' + memo.imgId + '」が見つかりませんでした';
+	}
+	room.objects[memo.imgId].message = memo.message;
+	room.objects[memo.imgId].lastUpdate = (new Date()).getTime();
+	room.lastUpdate = (new Date()).getTime();
+	
+	return room.objects[memo.imgId];
+};
+
+ObjectDAO.prototype.removeMemo = function(targetName, tenantId, roomId, opt_password, opt_isVisitable) {
+	return this.removeObject(targetName, '「' + targetName + '」が見つかりませんでした', tenantId, roomId, opt_password, opt_isVisitable);
+};
+
+ObjectDAO.prototype.getMemos = function(time, tenantId, roomId, opt_password, opt_isVisitable, opt_filter) {
+	var result = this.getObjects(time, tenantId, roomId, opt_password, opt_isVisitable, function(character) {
+		return character.type === 'memo';
+	});
+	return result.characters;
+};
+
+
 ObjectDAO.prototype.getAll = function() {
 	return this.store;
 };
@@ -166,6 +233,10 @@ ObjectDAO.prototype.removeAll = function(lastUpdate) {
 			delete this.store[tenantId];
 		}
 	}
+};
+
+ObjectDAO.prototype.restoreFromDump = function(dump) {
+	this.store = dump.data;
 };
 
 module.exports = ObjectDAO;

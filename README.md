@@ -13,6 +13,9 @@ TRPG 向けのキャラクターをはじめとするオブジェクトストア
 
 ## どうやって起動するの
 
+[Releases](https://github.com/Shunshun94/manaT/releases) から最新版をダウンロードしてきて、展開。
+展開した後のディレクトリの中で以下を実行。
+
 ```
 npm install
 npm start
@@ -40,6 +43,22 @@ HTTP に戻す場合は `key` か `crt` を空欄にしてください。
 npm config set manat:key ""
 npm config set manat:crt ""
 ```
+
+### 状態の保存
+
+データはまなてぃが起動している間に次のコマンドを実行することでローカルに保存できます。
+
+```
+npm run dump
+```
+
+`curl` を使っています。Windows 環境の場合は curl を導入してください。
+[curl](https://curl.haxx.se/)
+
+`dump_取得時間` というファイルが作られます。
+
+次に起動するときは最新の `dump_取得時間` を読みこんで起動するようになっています。
+
 
 ## ライセンス
 
@@ -72,3 +91,4 @@ WebIF の内容を参考にしました。本アプリにはこの WebIF との�
 - [API](./api.md)
 - [データ管理のしくみ](./data.md)
 - [GitHub リポジトリ](https://github.com/Shunshun94/manaT)
+- [更新履歴](https://github.com/Shunshun94/manaT/releases)

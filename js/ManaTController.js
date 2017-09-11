@@ -21,7 +21,7 @@ function isAdminRequest(req) {
 
 var ManaTController = function() {};
 
-// ManaTController.prototype.
+
 
 ManaTController.prototype.isExsits = function (req, res) {
 	res.jsonp({result: 'OK', message:'まなてぃは起動しています'});
@@ -46,17 +46,23 @@ ManaTController.prototype.removeAll = function (req, res) {
 	}
 };
 
+ManaTController.prototype.restoreFromDump = function(dump) {
+	service.restoreFromDump(dump);
+};
+
 ManaTController.prototype.DodontoFServer = function (req, res) {
 	try {
 		var unsupportedCommands = ["notSupportedCommand",
 		                           "getBusyInfo","getServerInfo","getRoomList",
 		                           "getLoginInfo","getLoginUserInfo","chat","talk",
 		                           "getChatColor","getRoomInfo","setRoomInfo",
-		                           "addMemo","changeMemo","addMessageCard","uploadImageData"];
+		                           "addMessageCard","uploadImageData"];
 		var supportedCommands = {
 				'addCharacter': 'addCharacter',
 				'changeCharacter': 'changeCharacter',
-				'refresh': 'getCharacters'};
+				"addMemo": "addMemo",
+				"changeMemo": "changeMemo",
+				'refresh': 'refresh'};//'getCharacters'};
 		var command = req.query.webif;
 		if(command) {
 			if(unsupportedCommands.indexOf(command) > -1) {
@@ -128,6 +134,89 @@ ManaTController.prototype.getCharacters = function (req, res) {
 	} catch (e) {
 		res.jsonp(errorReturn(e, req));
 	}
+};
+
+ManaTController.prototype.addMemo = function (req, res) {
+	try {
+		var memo = service.addMemo(req.query, service.generateTenantId(req));
+		res.jsonp({result: 'OK', data: memo});
+	} catch (e) {
+		res.jsonp(errorReturn(e, req));
+	}
+};
+
+ManaTController.prototype.changeMemo = function (req, res) {
+	try {
+		var memo = service.changeMemo(req.query, service.generateTenantId(req));
+		res.jsonp({result: 'OK', data: memo});
+	} catch (e) {
+		res.jsonp(errorReturn(e, req));
+	}
+};
+
+ManaTController.prototype.removeMemo = function (req, res) {
+	try {
+		service.removeMemo(req.query, service.generateTenantId(req));
+		res.jsonp({result: 'OK'});
+	} catch (e) {
+		res.jsonp(errorReturn(e, req));
+	}
+};
+
+ManaTController.prototype.getMemos = function (req, res) {
+	try {
+		var memos = service.getMemos(req.query, service.generateTenantId(req));
+		res.jsonp({result: 'OK', memos: memos});
+	} catch (e) {
+		res.jsonp(errorReturn(e, req));
+	}
+};
+
+ManaTController.prototype.getMap = function (req, res) {
+	try {
+		var map = service.getMap(req.query, service.generateTenantId(req));
+		res.jsonp({result: 'OK', mapData: map});
+	} catch (e) {
+		res.jsonp(errorReturn(e, req));
+	}
+};
+
+ManaTController.prototype.setMap = function (req, res) {
+	try {
+		var map = service.setMap(req.query, service.generateTenantId(req));
+		res.jsonp({result: 'OK', mapData: map});
+	} catch (e) {
+		res.jsonp(errorReturn(e, req));
+	}
+};
+
+ManaTController.prototype.refresh = function(req, res) {
+	const targetList = {
+			characters: {method: 'getObjects', lastUpdate: 'characters', key: 'characters'},
+			map: {method: 'getMap', lastUpdate: 'map', key: 'mapData'},
+			// time: {method: 'getTime', lastUpdate: 'time'},
+			// effects:  {method: 'getEffects', lastUpdate: 'effects'},
+			// roomInfo:  {method: 'getRoomInfo', lastUpdate: 'playRoomInfo'},
+			// chat: {method: 'getChatDummy', lastUpdate:'chatMesageDatalog'},
+			// 
+	};
+	
+	var values = {
+		lastUpdateTimes: {},
+		graveyard:[], // TODO implement
+		result: 'OK'
+	};
+	var tenantId = service.generateTenantId(req);
+	var query = req.query;
+	
+	for(var key in targetList) {
+		if(query[key]) {
+			var tempResult = service[targetList[key].method](query, tenantId);
+			values[targetList[key].key] = tempResult[targetList[key].key];
+			values.lastUpdateTimes[targetList[key].lastUpdate] = tempResult.lastUpdateTimes[targetList[key].lastUpdate];
+		}
+	}
+	res.jsonp(values);
 };
 
 module.exports = ManaTController;
