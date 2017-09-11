@@ -65,6 +65,8 @@ function getDumps() {
 				resolve({data:{}});
 			}
 			
+			console.log(dumpFiles)
+			
 			fs.readFile('./' + dumpFiles[0].title, function(fileErr, dumpedData) {
 				if(fileErr) {
 					reject(fileErr);
