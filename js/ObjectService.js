@@ -76,6 +76,10 @@ ObjectService.prototype.removeAll = function(query) {
 	return this.objectDAO.removeAll(query.characters || query.lastUpdateTime || query.lastUpdate || (new Date()).getTime());
 };
 
+ObjectService.prototype.restoreFromDump = function(dump) {
+	this.objectDAO.restoreFromDump(dump);
+};
+
 ObjectService.prototype.getObjects = function(query, tenantId) {
 	this.queryValidation(query, ['room']);
 	var time = query.characters || query.lastUpdateTime || query.lastUpdate || 0;

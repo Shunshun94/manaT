@@ -235,4 +235,8 @@ ObjectDAO.prototype.removeAll = function(lastUpdate) {
 	}
 };
 
+ObjectDAO.prototype.restoreFromDump = function(dump) {
+	this.store = dump.data;
+};
+
 module.exports = ObjectDAO;
