@@ -63,10 +63,8 @@ function getDumps() {
 			if(dumpFiles.length === 0) {
 				console.log('There no dump file.');
 				resolve({data:{}});
+				return;
 			}
-			
-			console.log(dumpFiles)
-			
 			fs.readFile('./' + dumpFiles[0].title, function(fileErr, dumpedData) {
 				if(fileErr) {
 					reject(fileErr);
