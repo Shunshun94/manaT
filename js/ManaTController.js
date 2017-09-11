@@ -21,7 +21,7 @@ function isAdminRequest(req) {
 
 var ManaTController = function() {};
 
-// ManaTController.prototype.
+
 
 ManaTController.prototype.isExsits = function (req, res) {
 	res.jsonp({result: 'OK', message:'まなてぃは起動しています'});
@@ -44,6 +44,10 @@ ManaTController.prototype.removeAll = function (req, res) {
 	} catch (e) {
 		res.jsonp(errorReturn(e, req));
 	}
+};
+
+ManaTController.prototype.restoreFromDump = function(dump) {
+	service.restoreFromDump(dump);
 };
 
 ManaTController.prototype.DodontoFServer = function (req, res) {
