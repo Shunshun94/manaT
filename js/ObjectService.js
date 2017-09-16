@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-const ObjectDAO = require('./ObjectDAO.js');
+const ObjectDAO = require('./dao/LocalMemoryObjectDAO.js');
 
 const ObjectService = function() {
 	this.objectDAO = new ObjectDAO();
