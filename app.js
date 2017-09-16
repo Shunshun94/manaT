@@ -19,27 +19,18 @@ app.get('/DodontoFServer.rb', controller.DodontoFServer.bind(controller));
 app.get('/refresh', controller.refresh);
 
 app.get('/addCharacter', controller.addCharacter);
-
 app.get('/changeCharacter', controller.changeCharacter);
-
 app.get('/updateCharacter', controller.updateCharacter);
-
 app.get('/removeCharacter', controller.removeCharacter);
-
 app.get('/getCharacter', controller.getCharacter);
-
 app.get('/getCharacters', controller.getCharacters);
 
 app.get('/addMemo', controller.addMemo);
-
 app.get('/changeMemo', controller.changeMemo);
-
 app.get('/removeMemo', controller.removeMemo);
-
 app.get('/getMemos', controller.getMemos);
 
 app.get('/getMap', controller.getMap);
-
 app.get('/setMap', controller.setMap);
 
 function getDumps() {
