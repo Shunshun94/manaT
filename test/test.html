@@ -151,6 +151,9 @@ var tests = [
 ['名前を指定し損ねる', 'addCharacter', {room: 1}, isNoName],
 ['名前を指定し損ねる', 'getCharacters', {}, isNoRoom],
 ['キャラクター一覧取得', 'getCharacters', {room: 1}, charactersCount0],
+
+
+['LINE'],
 ['キャラクター追加', 'addCharacter', {room: 1, name:'ひよこ'}],
 ['追加したものを一覧から取得できるか', 'getCharacters', {room: 1}, charactersCount1],
 ['追加したものを指定して取得できるか', 'getCharacter', {room: 1, targetName:'ひよこ'}],
@@ -166,13 +169,16 @@ var tests = [
 ['キャラクター修正 (change 名前含む)', 'changeCharacter', {room: 1, targetName:'ひつじ', name:'ひつつーん', isHide:'12', counters: 'HP:1,MP:1', x:1, y:9, info: 'ひつじだよ'}, isCharacterSetupedWell],
 ['キャラクタ―追加の結果', 'getCharacters', {room: 1}, charactersCount2],
 
+
+['LINE'],
 ['どどんとふ互換 存在しないコマンド', 'DodontoFServer.rb', {room: 1, webif:'not_found'}, isNG],
 ['どどんとふ互換 非サポートコマンド', 'DodontoFServer.rb', {room: 1, webif:'notSupportedCommand'}, isNG],
-
 ['どどんとふ互換 refresh', 'DodontoFServer.rb', {room: 1, webif:'refresh', characters:1, map:1}, charactersCount2],
 ['どどんとふ互換 addCharacter', 'addCharacter', {room: 1, name:'こひつじ', isHide:'12', counters: 'HP:1,MP:1', x:1, y:9, info: 'ひつじだよ'}, isCharacterSetupedWell],
 ['どどんとふ互換 changeCharacter', 'changeCharacter', {room: 1, targetName:'こひつじ', name:'ひつつーん！', isHide:'', counters: 'HP:8,MP:8', x:8, y:8, info: 'ひつじなの！'}, isCharacterUpdatedWellWithoutName],
 
+
+['LINE'],
 ['メモ一覧取得 (ない)', 'getMemos', {room: 1}, memoCount0],
 ['メモ追加', 'addMemo', {room: 1, message:'ひよこ'}],
 ['メモ追加はキャラクター一覧に影響がない', 'getCharacters', {room: 1}, charactersCount3],
@@ -186,13 +192,24 @@ var tests = [
 ['メモ一覧取得 (2件)', 'getMemos', {room: 1}, memoCount2],
 ['どどんとふ互換 refresh でメモも含めて取得', 'DodontoFServer.rb', {room: 1, webif:'refresh', characters:0, map:0}, charactersCount5],
 
+
+['LINE'],
 ['パスワードがない部屋へのパスワードを付けての入室', 'getCharacters', {room: 1, password: 'dummy'}],
 ['パスワードがある部屋の作成 (見学不可)', 'getCharacters', {room: 2, password: 'dummy'}],
-['パスワードが間違った場合 (見学不可)', 'getCharacters', {room: 2, password: 'invalidPass'}, isNG],
-['パスワードがなしの場合 (見学不可)', 'getCharacters', {room: 2}, isNG],
+['パスワードが正しい場合 (追加) (見学不可)', 'addCharacter', {room: 2, password: 'dummy', name:'ひつじ', isHide:'12', counters: 'HP:1,MP:1', x:1, y:9, info: 'ひつじだよ'}, isCharacterSetupedWell],
+['パスワードが間違った場合 (追加) (見学不可/NG)', 'addCharacter', {room: 2, password: 'invalidPass', name:'ひつじ', isHide:'12', counters: 'HP:1,MP:1', x:1, y:9, info: 'ひつじだよ'}, isNG],
+['パスワードがなしの場合 (追加) (見学不可/NG)', 'addCharacter', {room: 2, name:'ひつじ', isHide:'12', counters: 'HP:1,MP:1', x:1, y:9, info: 'ひつじだよ'}, isNG],
+['パスワードが正しい場合 (閲覧) (見学不可)', 'getCharacters', {room: 2, password: 'dummy'}, charactersCount1],
+['パスワードが間違った場合 (閲覧) (見学不可/NG)', 'getCharacters', {room: 2, password: 'invalidPass'}, isNG],
+['パスワードがなしの場合 (閲覧) (見学不可/NG)', 'getCharacters', {room: 2}, isNG],
+
 ['パスワードがある部屋の作成 (見学可)', 'getCharacters', {room: 3, password: 'dummy', isVisitable: '1'}],
-['パスワードが間違った場合 (見学可)', 'getCharacters', {room: 3, password: 'invalidPass'}],
-['パスワードがなしの場合 (見学可)', 'getCharacters', {room: 3}]
+['パスワードが正しい場合 (追加) (見学可)', 'addCharacter', {room: 3, password: 'dummy', name:'ひつじ', isHide:'12', counters: 'HP:1,MP:1', x:1, y:9, info: 'ひつじだよ'}, isCharacterSetupedWell],
+['パスワードが間違った場合 (追加) (見学可/NG)', 'addCharacter', {room: 3, password: 'invalidPass', name:'ひつじ', isHide:'12', counters: 'HP:1,MP:1', x:1, y:9, info: 'ひつじだよ'}, isNG],
+['パスワードがなしの場合 (追加) (見学可/NG)', 'addCharacter', {room: 3, name:'ひつじ', isHide:'12', counters: 'HP:1,MP:1', x:1, y:9, info: 'ひつじだよ'}, isNG],
+['パスワードが正しい場合 (閲覧) (見学可)', 'getCharacters', {room: 3, password: 'dummy'}, charactersCount1],
+['パスワードが間違った場合 (閲覧) (見学可/OK)', 'getCharacters', {room: 3, password: 'invalidPass'}],
+['パスワードがなしの場合 (閲覧) (見学可/OK)', 'getCharacters', {room: 3}, charactersCount1],
 ];
 
 function evaluate(array, num, opt_lastTestResult) {
@@ -201,6 +218,17 @@ function evaluate(array, num, opt_lastTestResult) {
 		return;
 	}
 	var target = array.shift();
+	
+try {
+	if(target[0] === 'LINE') {
+		$result.append('<hr/>');
+		evaluate(array, num, opt_lastTestResult);
+		return;
+	}
+} catch (exception) {
+	console.error(exception, target, array);
+	return;
+}
 	
 	$.ajax({
 		type:'get',

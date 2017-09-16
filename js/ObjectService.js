@@ -83,16 +83,9 @@ ObjectService.prototype.restoreFromDump = function(dump) {
 ObjectService.prototype.getObjects = function(query, tenantId) {
 	this.queryValidation(query, ['room']);
 	var time = query.characters || query.lastUpdateTime || query.lastUpdate || 0;
-	if(query.password) {
-		var password = this.hash(query.password + tenantId);
-		if(query.isVisitable) {
-			return this.objectDAO.getObjects(time, tenantId, query.room, password, query.isVisitable);
-		} else {
-			return this.objectDAO.getObjects(time, tenantId, query.room, password);
-		}
-	} else {
-		return this.objectDAO.getObjects(time, tenantId, query.room);
-	}
+	
+	var password = query.password ? this.hash(query.password + tenantId) : '';
+	return this.objectDAO.getObjects.apply(this.objectDAO, [time, tenantId, query.room, password, query.isVisitable]);
 };
 
 ObjectService.prototype.addCharacter = function(query, tenantId) {
@@ -114,16 +107,8 @@ ObjectService.prototype.addCharacter = function(query, tenantId) {
 			counters: this.convertCounters(query.counters || '')
 		};
 
-	if(query.password) {
-		var password = this.hash(query.password + tenantId);
-		if(query.isVisitable) {
-			this.objectDAO.addCharacter(characterData, tenantId, query.room, password, query.isVisitable);
-		} else {
-			this.objectDAO.addCharacter(characterData, tenantId, query.room, password);
-		}
-	} else {
-		this.objectDAO.addCharacter(characterData, tenantId, query.room);
-	}
+	var password = query.password ? this.hash(query.password + tenantId) : '';
+	this.objectDAO.addCharacter.apply(this.objectDAO, [characterData, tenantId, query.room, password, query.isVisitable]);
 	
 	return characterData;
 };
@@ -153,20 +138,8 @@ ObjectService.prototype.changeCharacter = function(query, tenantId) {
 		}
 	}
 	
-	var result;
-
-	if(query.password) {
-		var password = this.hash(query.password + tenantId);
-		if(query.isVisitable) {
-			result = this.objectDAO.changeCharacter(characterData, tenantId, query.room, password, query.isVisitable);
-		} else {
-			result = this.objectDAO.changeCharacter(characterData, tenantId, query.room, password);
-		}
-	} else {
-		result = this.objectDAO.changeCharacter(characterData, tenantId, query.room);
-	}
-	
-	return result;
+	var password = query.password ? this.hash(query.password + tenantId) : '';
+	return this.objectDAO.changeCharacter.apply(this.objectDAO, [characterData, tenantId, query.room, password, query.isVisitable]);
 };
 
 ObjectService.prototype.updateCharacter = function(query, tenantId) {
@@ -193,64 +166,29 @@ ObjectService.prototype.updateCharacter = function(query, tenantId) {
 			characterData[key] = this.convertCounters(query[key]);
 		}
 	}
-	
-	var result;
 
-	if(query.password) {
-		var password = this.hash(query.password + tenantId);
-		if(query.isVisitable) {
-			result = this.objectDAO.updateCharacter(characterData, tenantId, query.room, password, query.isVisitable);
-		} else {
-			result = this.objectDAO.updateCharacter(characterData, tenantId, query.room, password);
-		}
-	} else {
-		result = this.objectDAO.updateCharacter(characterData, tenantId, query.room);
-	}
-	
-	return result;
+	var password = query.password ? this.hash(query.password + tenantId) : '';
+	return this.objectDAO.updateCharacter.apply(this.objectDAO, [characterData, tenantId, query.room, password, query.isVisitable]);
 };
 
 ObjectService.prototype.removeCharacter = function(query, tenantId) {
 	this.queryValidation(query, ['room', 'targetName']);
-	if(query.password) {
-		var password = this.hash(query.password + tenantId);
-		if(query.isVisitable) {
-			this.objectDAO.removeCharacter(query.targetName, tenantId, query.room, password, query.isVisitable);
-		} else {
-			this.objectDAO.removeCharacter(query.targetName, tenantId, query.room, password);
-		}
-	} else {
-		this.objectDAO.removeCharacter(query.targetName, tenantId, query.room);
-	}
+	var password = query.password ? this.hash(query.password + tenantId) : '';
+	this.objectDAO.removeCharacter.apply(this.objectDAO, [query.targetName, tenantId, query.room, password, query.isVisitable]);
 };
 
 ObjectService.prototype.getCharacter = function(query, tenantId) {
 	this.queryValidation(query, ['room', 'targetName']);
-	if(query.password) {
-		var password = this.hash(query.password + tenantId);
-		if(query.isVisitable) {
-			return this.objectDAO.getCharacter(query.targetName, tenantId, query.room, password, query.isVisitable);
-		} else {
-			return this.objectDAO.getCharacter(query.targetName, tenantId, query.room, password);
-		}
-	} else {
-		return this.objectDAO.getCharacter(query.targetName, tenantId, query.room);
-	}
+	var password = query.password ? this.hash(query.password + tenantId) : '';
+	return this.objectDAO.getCharacter.apply(this.objectDAO, [query.targetName, tenantId, query.room, password, query.isVisitable]);
 };
 
 ObjectService.prototype.getCharacters = function(query, tenantId) {
 	this.queryValidation(query, ['room']);
 	var time = query.characters || query.lastUpdateTime || query.lastUpdate || 0;
-	if(query.password) {
-		var password = this.hash(query.password + tenantId);
-		if(query.isVisitable) {
-			return this.objectDAO.getCharacters(time, tenantId, query.room, password, query.isVisitable);
-		} else {
-			return this.objectDAO.getCharacters(time, tenantId, query.room, password);
-		}
-	} else {
-		return this.objectDAO.getCharacters(time, tenantId, query.room);
-	}
+	
+	var password = query.password ? this.hash(query.password + tenantId) : '';
+	return this.objectDAO.getCharacters.apply(this.objectDAO, [time, tenantId, query.room, password, query.isVisitable]);
 };
 
 ObjectService.prototype.addMemo = function(query, tenantId) {
@@ -267,16 +205,8 @@ ObjectService.prototype.addMemo = function(query, tenantId) {
 		width:this.numberlize(query.x, 1)
 	};
 	
-	if(query.password) {
-		var password = this.hash(query.password + tenantId);
-		if(query.isVisitable) {
-			return this.objectDAO.addMemo(memo, tenantId, query.room, password, query.isVisitable);
-		} else {
-			return this.objectDAO.addMemo(memo, tenantId, query.room, password);
-		}
-	} else {
-		return this.objectDAO.addMemo(memo, tenantId, query.room);
-	}
+	var password = query.password ? this.hash(query.password + tenantId) : '';
+	return this.objectDAO.addMemo.apply(this.objectDAO, [memo, tenantId, query.room, password, query.isVisitable]);
 };
 
 ObjectService.prototype.changeMemo = function(query, tenantId) {
@@ -286,17 +216,8 @@ ObjectService.prototype.changeMemo = function(query, tenantId) {
 		imgId: query.targetId || query.targetName || query.imgId,
 		message: query.message
 	};
-	
-	if(query.password) {
-		var password = this.hash(query.password + tenantId);
-		if(query.isVisitable) {
-			return this.objectDAO.changeMemo(memo, tenantId, query.room, password, query.isVisitable);
-		} else {
-			return this.objectDAO.changeMemo(memo, tenantId, query.room, password);
-		}
-	} else {
-		return this.objectDAO.changeMemo(memo, tenantId, query.room);
-	}
+	var password = query.password ? this.hash(query.password + tenantId) : '';
+	return this.objectDAO.changeMemo.apply(this.objectDAO, [memo, tenantId, query.room, password, query.isVisitable]);
 };
 
 
@@ -304,47 +225,22 @@ ObjectService.prototype.removeMemo = function(query, tenantId) {
 	this.queryValidation(query, ['room', ['targetId', 'targetName', 'imgId']]);
 	
 	var imgId = query.targetId || query.targetName || query.imgId;
-	
-	if(query.password) {
-		var password = this.hash(query.password + tenantId);
-		if(query.isVisitable) {
-			return this.objectDAO.removeMemo(imgId, tenantId, query.room, password, query.isVisitable);
-		} else {
-			return this.objectDAO.removeMemo(imgId, tenantId, query.room, password);
-		}
-	} else {
-		return this.objectDAO.removeMemo(imgId, tenantId, query.room);
-	}
+	var password = query.password ? this.hash(query.password + tenantId) : '';
+	return this.objectDAO.removeMemo.apply(this.objectDAO, [imgId, tenantId, query.room, password, query.isVisitable]);
 };
 
 ObjectService.prototype.getMemos = function(query, tenantId) {
 	this.queryValidation(query, ['room']);
 	var time = query.characters || query.lastUpdateTime || query.lastUpdate || 0;
-	if(query.password) {
-		var password = this.hash(query.password + tenantId);
-		if(query.isVisitable) {
-			return this.objectDAO.getMemos(time, tenantId, query.room, password, query.isVisitable);
-		} else {
-			return this.objectDAO.getMemos(time, tenantId, query.room, password);
-		}
-	} else {
-		return this.objectDAO.getMemos(time, tenantId, query.room);
-	}
+	var password = query.password ? this.hash(query.password + tenantId) : '';
+	return this.objectDAO.getMemos.apply(this.objectDAO, [time, tenantId, query.room, password, query.isVisitable]);
 };
 
 ObjectService.prototype.getMap = function(query, tenantId) {
 	this.queryValidation(query, ['room']);
 	var time = query.map || query.lastUpdateTime || query.lastUpdate || 0;
-	if(query.password) {
-		var password = this.hash(query.password + tenantId);
-		if(query.isVisitable) {
-			return this.objectDAO.getMap(time, tenantId, query.room, password, query.isVisitable);
-		} else {
-			return this.objectDAO.getMap(time, tenantId, query.room, password);
-		}
-	} else {
-		return this.objectDAO.getMap(time, tenantId, query.room);
-	}
+	var password = query.password ? this.hash(query.password + tenantId) : '';
+	return this.objectDAO.getMap.apply(this.objectDAO, [time, tenantId, query.room, password, query.isVisitable]);
 };
 
 ObjectService.prototype.setMap = function(query, tenantId) {
@@ -358,17 +254,9 @@ ObjectService.prototype.setMap = function(query, tenantId) {
 			map[key.dataKey] = query[key.queryKey];
 		}
 	});
-
-	if(query.password) {
-		var password = this.hash(query.password + tenantId);
-		if(query.isVisitable) {
-			return this.objectDAO.setMap(map, tenantId, query.room, password, query.isVisitable);
-		} else {
-			return this.objectDAO.setMap(map, tenantId, query.room, password);
-		}
-	} else {
-		return this.objectDAO.setMap(map, tenantId, query.room);
-	}
+	
+	var password = query.password ? this.hash(query.password + tenantId) : '';
+	return this.objectDAO.setMap.apply(this.objectDAO, [map, tenantId, query.room, password, query.isVisitable]);
 };
 
 module.exports = ObjectService;
