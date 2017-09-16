@@ -661,14 +661,12 @@
 {
 	"result":"OK",
 	"mapData":{
-		"mapData":{
-			"imageSource":"https://shunshun94.github.io/manaT/images/background.jpg",
-			"xMax":32,
-			"yMax":18
-		},
-		"lastUpdateTimes":{
-			"map":1504970408470
-		}
+		"imageSource":"https://shunshun94.github.io/manaT/images/background.jpg",
+		"xMax":32,
+		"yMax":18
+	},
+	"lastUpdateTimes":{
+		"map":1504970408470
 	}
 }
 ```
