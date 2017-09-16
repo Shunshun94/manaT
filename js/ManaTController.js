@@ -172,6 +172,14 @@ ManaTController.prototype.getMemos = function (req, res) {
 	}
 };
 
+ManaTController.prototype.addObject  = function (req, res) {};
+ManaTController.prototype.addFloorTile  = function (req, res) {};
+ManaTController.prototype.addMapMask  = function (req, res) {};
+ManaTController.prototype.addMapMarker  = function (req, res) {};
+ManaTController.prototype.addChit  = function (req, res) {};
+ManaTController.prototype.addDiceSymbol  = function (req, res) {};
+ManaTController.prototype.addCard  = function (req, res) {};
+
 ManaTController.prototype.getMap = function (req, res) {
 	try {
 		var map = service.getMap(req.query, service.generateTenantId(req));
