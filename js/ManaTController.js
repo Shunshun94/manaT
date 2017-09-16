@@ -174,8 +174,7 @@ ManaTController.prototype.getMemos = function (req, res) {
 
 ManaTController.prototype.getMap = function (req, res) {
 	try {
-		var map = service.getMap(req.query, service.generateTenantId(req));
-		res.jsonp({result: 'OK', mapData: map});
+		res.jsonp(service.getMap(req.query, service.generateTenantId(req)));
 	} catch (e) {
 		res.jsonp(errorReturn(e, req));
 	}

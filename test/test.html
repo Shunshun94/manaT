@@ -145,6 +145,14 @@ function isCharacterUpdatedWellWithoutName(result) {
 	return {result: 'OK'};
 }
 
+function isMap25(result) {
+	if(Number(result.mapData.xMax) === 5 && Number(result.mapData.yMax) === 5) {
+		return {result: 'OK'};
+	} else {
+		return {result: 'マップが 5×5 であることが期待されますが、実際には' + result.mapData.xMax + '×' +result.mapData.yMax + 'でした。なお、初期値は 32×18 です。'};
+	}
+}
+
 var tests = [
 ['初期化', 'removeAll', {}],
 ['部屋を指定し損ねる', 'addCharacter', {}, isNoRoom],
@@ -169,6 +177,9 @@ var tests = [
 ['キャラクター修正 (change 名前含む)', 'changeCharacter', {room: 1, targetName:'ひつじ', name:'ひつつーん', isHide:'12', counters: 'HP:1,MP:1', x:1, y:9, info: 'ひつじだよ'}, isCharacterSetupedWell],
 ['キャラクタ―追加の結果', 'getCharacters', {room: 1}, charactersCount2],
 
+['LINE'],
+['マップ変更', 'setMap', {room: 1, size: 5}],
+['マップ取得', 'getMap', {room: 1}, isMap25],
 
 ['LINE'],
 ['どどんとふ互換 存在しないコマンド', 'DodontoFServer.rb', {room: 1, webif:'not_found'}, isNG],
