@@ -55,6 +55,22 @@ function memoCount1(result) {return checkExpectedCount(result.memos, 1);}
 function memoCount2(result) {return checkExpectedCount(result.memos, 2);}
 function memoCount3(result) {return checkExpectedCount(result.memos, 3);}
 
+function isNotHereSonzaiShinaiMemo(result) {
+	if(result.result === '「存在しないメモ」が見つかりませんでした') {
+		return {result: 'OK'};
+	} else {
+		return {result: 'エラーメッセージが "「存在しないメモ」が見つかりませんでした" であることを期待されているのに実際には「' + result.result + '」でした'};
+	}
+}
+
+function isNotFoundCharacter(result) {
+	if(result.result === '「存在しない名前」という名前のキャラクターは存在しません') {
+		return {result: 'OK'};
+	} else {
+		return {result: 'エラーメッセージが "「存在しない名前」という名前のキャラクターは存在しません" であることを期待されているのに実際には「' + result.result + '」でした'};
+	}
+}
+
 function isIncludedTitleHiyokonoko(result) {
 	if(result.memos.filter(function(memo) {
 		return memo.imgId === 'ひよこのこ';
@@ -169,6 +185,7 @@ var tests = [
 ['キャラクター追加', 'addCharacter', {room: 1, name:'ひつこ'}],
 ['キャラクター追加 (重複名前でミス)', 'addCharacter', {room: 1, name:'ひつこ'}, isNG],
 ['キャラクター削除', 'removeCharacter', {room: 1, targetName:'ひよこ'}],
+['キャラクター削除 (存在しない子)', 'removeCharacter', {room: 1, targetName:'存在しない名前'}, isNotFoundCharacter],
 ['キャラクター追加', 'addCharacter', {room: 1, name:'ひつじ', isHide:'12', counters: 'HP:1,MP:1', x:1, y:9, info: 'ひつじだよ'}, isCharacterSetupedWell],
 ['キャラクター修正 (change 名前含まず指定ミス)', 'changeCharacter', {room: 1, targetName:'存在しない名前', isHide:'', counters: 'HP:8,MP:8', x:8, y:8, info: 'ひつじなの！'}, isNG],
 ['キャラクター修正 (change 名前含まず)', 'changeCharacter', {room: 1, targetName:'ひつじ', isHide:'', counters: 'HP:8,MP:8', x:8, y:8, info: 'ひつじなの！'}, isCharacterUpdatedWellWithoutName],
@@ -200,6 +217,7 @@ var tests = [
 ['メモ更新 (ひよこのこ)', 'changeMemo', {room: 1, targetId:'ひよこのこ', message:'ひよこのこ'}, isIncludedBodyHiyokonoko],
 ['メモ一覧取得 (3件)', 'getMemos', {room: 1}, memoCount3],
 ['メモ削除 (ひよこのこ)', 'removeMemo', {room: 1, targetId:'ひよこのこ'}],
+['メモ削除 (存在しないもの)', 'removeMemo', {room: 1, targetId:'存在しないメモ'}, isNotHereSonzaiShinaiMemo],
 ['メモ一覧取得 (2件)', 'getMemos', {room: 1}, memoCount2],
 ['どどんとふ互換 refresh でメモも含めて取得', 'DodontoFServer.rb', {room: 1, webif:'refresh', characters:0, map:0}, charactersCount5],
 

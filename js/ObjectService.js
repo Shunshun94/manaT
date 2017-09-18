@@ -68,6 +68,14 @@ ObjectService.prototype.convertCounters = function(string) {
 	return result;
 };
 
+ObjectService.prototype.handleError = function(e, opt_errorMsg) {
+	if(e.target) {
+		throw opt_errorMsg ? 'Manat:' + opt_errorMsg : 'Manat:「' + e.target + '」が見つかりませんでした'
+	} else {
+		throw errorMsg;
+	}	
+};
+
 ObjectService.prototype.getAll = function() {
 	return this.objectDAO.getAll();
 };
@@ -174,7 +182,12 @@ ObjectService.prototype.updateCharacter = function(query, tenantId) {
 ObjectService.prototype.removeCharacter = function(query, tenantId) {
 	this.queryValidation(query, ['room', 'targetName']);
 	var password = query.password ? this.hash(query.password + tenantId) : '';
-	this.objectDAO.removeCharacter.apply(this.objectDAO, [query.targetName, tenantId, query.room, password, query.isVisitable]);
+	try {
+		this.objectDAO.removeObject.apply(this.objectDAO, [query.targetName, tenantId, query.room, password, query.isVisitable]);
+	} catch(e) {
+		this.handleError(e, '「' + query.targetName + '」という名前のキャラクターは存在しません')
+	}
+	
 };
 
 ObjectService.prototype.getCharacter = function(query, tenantId) {
@@ -206,7 +219,7 @@ ObjectService.prototype.addMemo = function(query, tenantId) {
 	};
 	
 	var password = query.password ? this.hash(query.password + tenantId) : '';
-	return this.objectDAO.addMemo.apply(this.objectDAO, [memo, tenantId, query.room, password, query.isVisitable]);
+	return this.objectDAO.addObject.apply(this.objectDAO, [memo, tenantId, query.room, password, query.isVisitable]);
 };
 
 ObjectService.prototype.changeMemo = function(query, tenantId) {
@@ -217,7 +230,7 @@ ObjectService.prototype.changeMemo = function(query, tenantId) {
 		message: query.message
 	};
 	var password = query.password ? this.hash(query.password + tenantId) : '';
-	return this.objectDAO.changeMemo.apply(this.objectDAO, [memo, tenantId, query.room, password, query.isVisitable]);
+	return this.objectDAO.changeObject.apply(this.objectDAO, [memo, tenantId, query.room, password, query.isVisitable]);
 };
 
 
@@ -226,7 +239,11 @@ ObjectService.prototype.removeMemo = function(query, tenantId) {
 	
 	var imgId = query.targetId || query.targetName || query.imgId;
 	var password = query.password ? this.hash(query.password + tenantId) : '';
-	return this.objectDAO.removeMemo.apply(this.objectDAO, [imgId, tenantId, query.room, password, query.isVisitable]);
+	try {
+		return this.objectDAO.removeObject.apply(this.objectDAO, [imgId, tenantId, query.room, password, query.isVisitable]);
+	} catch (e) {
+		this.handleError(e);
+	}
 };
 
 ObjectService.prototype.getMemos = function(query, tenantId) {
