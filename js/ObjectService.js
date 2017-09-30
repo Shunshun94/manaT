@@ -73,7 +73,7 @@ ObjectService.prototype.handleError = function(e, opt_errorMsg) {
 		throw opt_errorMsg ? 'Manat:' + opt_errorMsg : 'Manat:「' + e.target + '」が見つかりませんでした'
 	} else {
 		throw errorMsg;
-	}	
+	}
 };
 
 ObjectService.prototype.getAll = function() {
@@ -91,9 +91,16 @@ ObjectService.prototype.restoreFromDump = function(dump) {
 ObjectService.prototype.getObjects = function(query, tenantId) {
 	this.queryValidation(query, ['room']);
 	var time = query.characters || query.lastUpdateTime || query.lastUpdate || 0;
+	var filterFunction;
+	
+	if(query.type) {
+		filterFunction = function(object) {
+			return character.type === query.type;
+		};
+	}
 	
 	var password = query.password ? this.hash(query.password + tenantId) : '';
-	return this.objectDAO.getObjects.apply(this.objectDAO, [time, tenantId, query.room, password, query.isVisitable]);
+	return this.objectDAO.getObjects.apply(this.objectDAO, [time, tenantId, query.room, password, query.isVisitable, filterFunction]);
 };
 
 ObjectService.prototype.addCharacter = function(query, tenantId) {
@@ -234,7 +241,7 @@ ObjectService.prototype.changeMemo = function(query, tenantId) {
 };
 
 
-ObjectService.prototype.removeMemo = function(query, tenantId) {
+ObjectService.prototype.removeObject = function(query, tenantId) {
 	this.queryValidation(query, ['room', ['targetId', 'targetName', 'imgId']]);
 	
 	var imgId = query.targetId || query.targetName || query.imgId;

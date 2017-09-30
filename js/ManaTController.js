@@ -156,7 +156,7 @@ ManaTController.prototype.changeMemo = function (req, res) {
 
 ManaTController.prototype.removeMemo = function (req, res) {
 	try {
-		service.removeMemo(req.query, service.generateTenantId(req));
+		service.removeObject(req.query, service.generateTenantId(req));
 		res.jsonp({result: 'OK'});
 	} catch (e) {
 		res.jsonp(errorReturn(e, req));
@@ -172,13 +172,40 @@ ManaTController.prototype.getMemos = function (req, res) {
 	}
 };
 
-ManaTController.prototype.addObject  = function (req, res) {};
+ManaTController.prototype.addObject  = function (req, res) {
+	try {
+		var object = service.addObject(req.query, service.generateTenantId(req));
+		res.jsonp({result: 'OK', data: object});
+	} catch (e) {
+		res.jsonp(errorReturn(e, req));
+	}
+};
+
 ManaTController.prototype.addFloorTile  = function (req, res) {};
 ManaTController.prototype.addMapMask  = function (req, res) {};
 ManaTController.prototype.addMapMarker  = function (req, res) {};
 ManaTController.prototype.addChit  = function (req, res) {};
 ManaTController.prototype.addDiceSymbol  = function (req, res) {};
 ManaTController.prototype.addCard  = function (req, res) {};
+
+ManaTController.prototype.removeObject = function (req, res) {
+	try {
+		service.removeObject(req.query, service.generateTenantId(req));
+		res.jsonp({result: 'OK'});
+	} catch (e) {
+		res.jsonp(errorReturn(e, req));
+	}
+};
+
+ManaTController.prototype.getObjects = function (req, res) {
+	try {
+		var characters = service.getObjects(req.query, service.generateTenantId(req));
+		characters.result = 'OK';
+		res.jsonp(characters);
+	} catch (e) {
+		res.jsonp(errorReturn(e, req));
+	}
+};
 
 ManaTController.prototype.getMap = function (req, res) {
 	try {
