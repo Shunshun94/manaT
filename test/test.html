@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>manat run test</title>
+</head>
+<body>
+<div id="result"></div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+var $result = $('#result');
+
+function isOK(result) {
+	return result;
+}
+
+function isNG(result) {
+	return {
+		result: (result.result !== 'OK' && result.result.indexOf('まなてぃでエラーが発生しました') === -1) ? 'OK' : 'なにかがうまく返ってきてしまった。NG なはずなのに'
+	};
+}
+
+function isNoRoom(result) {
+	return {
+		result: result.result.indexOf('room') !== -1 ? 'OK' : 'room 引数がない旨が返ってこない'
+	}
+}
+
+function isNoName(result) {
+	return {
+		result: result.result.indexOf('name') !== -1 ? 'OK' : 'name 引数がない旨が返ってこない'
+	}
+}
+
+function isExist(result) {
+	return {
+		result: result.result.indexOf('という名前のキャラクターはすでに存在しています') !== -1 ? 'OK' : 'キャラクター既存である旨が返ってこない'
+	}
+}
+
+function checkExpectedCount(target, expected) {
+	return {
+		result: target.length === expected ? 'OK' : '予定と人数が違う actual:' + target.length + ' / expected:' + expected
+	};
+}
+
+function charactersCount0(result) {return checkExpectedCount(result.characters, 0);}
+function charactersCount1(result) {return checkExpectedCount(result.characters, 1);}
+function charactersCount2(result) {return checkExpectedCount(result.characters, 2);}
+function charactersCount3(result) {return checkExpectedCount(result.characters, 3);}
+function charactersCount5(result) {return checkExpectedCount(result.characters, 5);}
+
+function memoCount0(result) {return checkExpectedCount(result.memos, 0);}
+function memoCount1(result) {return checkExpectedCount(result.memos, 1);}
+function memoCount2(result) {return checkExpectedCount(result.memos, 2);}
+function memoCount3(result) {return checkExpectedCount(result.memos, 3);}
+
+function isIncludedTitleHiyokonoko(result) {
+	if(result.memos.filter(function(memo) {
+		return memo.imgId === 'ひよこのこ';
+	}).length) {
+		return {result: 'OK'};
+	} else {
+		return {result: 'ひよこのこがいない'};
+	}
+};
+
+function isIncludedBodyHiyokonoko(result) {
+	if(result.data.message === 'ひよこのこ') {
+		return {result: 'OK'};
+	} else {
+		return {result: 'ひよこのこがいない'};
+	}
+};
+
+function isCharacterSetupedWell(result) {
+	var counters = {HP: 1, MP: 1, LOVE:undefined};
+	var resultData = {x:1, y:9, info: 'ひつじだよ', isHide: true};
+	
+	var character = result.data;
+	for(var key in counters) {
+		if(counters[key] != character.counters[key]) {
+			return {
+				result: 'character.counters.' +key + ' は ' + counters[key] + ' が期待されますが、実際には ' + character.counters[key] + 'でした'
+			};
+		}
+	}
+	
+	for(var key in resultData) {
+		if(resultData[key] != character[key]) {
+			return {
+				result: 'character.' +key + ' は ' + resultData[key] + ' が期待されますが、実際には ' + character[key] + 'でした'
+			};
+		}
+	}
+	
+	return {result: 'OK'};
+}
+
+function isCharacterUpdatedWellUpdateMethod(result) {
+	var counters = {HP: 32, MP: 8, LOVE: 'hiyoko'};
+	var resultData = {x:8, y:8, info: 'ひつじなの！', isHide: false};
+	
+	var character = result.data;
+	for(var key in counters) {
+		if(counters[key] != character.counters[key]) {
+			return {
+				result: 'character.counters.' +key + ' は ' + counters[key] + ' が期待されますが、実際には ' + character.counters[key] + 'でした'
+			};
+		}
+	}
+	
+	for(var key in resultData) {
+		if(resultData[key] != character[key]) {
+			return {
+				result: 'character.' +key + ' は ' + resultData[key] + ' が期待されますが、実際には ' + character[key] + 'でした'
+			};
+		}
+	}
+	
+	return {result: 'OK'};
+}
+
+function isCharacterUpdatedWellWithoutName(result) {
+	var counters = {HP: 8, MP: 8};
+	var resultData = {x:8, y:8, info: 'ひつじなの！', isHide: false};
+	
+	var character = result.data;
+	for(var key in counters) {
+		if(counters[key] != character.counters[key]) {
+			return {
+				result: 'character.counters.' +key + ' は ' + counters[key] + ' が期待されますが、実際には ' + character.counters[key] + 'でした'
+			};
+		}
+	}
+	
+	for(var key in resultData) {
+		if(resultData[key] != character[key]) {
+			return {
+				result: 'character.' +key + ' は ' + resultData[key] + ' が期待されますが、実際には ' + character[key] + 'でした'
+			};
+		}
+	}
+	
+	return {result: 'OK'};
+}
+
+var tests = [
+['初期化', 'removeAll', {}],
+['部屋を指定し損ねる', 'addCharacter', {}, isNoRoom],
+['名前を指定し損ねる', 'addCharacter', {room: 1}, isNoName],
+['名前を指定し損ねる', 'getCharacters', {}, isNoRoom],
+['キャラクター一覧取得', 'getCharacters', {room: 1}, charactersCount0],
+['キャラクター追加', 'addCharacter', {room: 1, name:'ひよこ'}],
+['追加したものを一覧から取得できるか', 'getCharacters', {room: 1}, charactersCount1],
+['追加したものを指定して取得できるか', 'getCharacter', {room: 1, targetName:'ひよこ'}],
+['存在しない子を取得しようとして失敗するか', 'getCharacter', {room: 1, targetName:'ひつこ'}, isNG],
+['キャラクター追加', 'addCharacter', {room: 1, name:'ひつこ'}],
+['キャラクター追加 (重複名前でミス)', 'addCharacter', {room: 1, name:'ひつこ'}, isNG],
+['キャラクター削除', 'removeCharacter', {room: 1, targetName:'ひよこ'}],
+['キャラクター追加', 'addCharacter', {room: 1, name:'ひつじ', isHide:'12', counters: 'HP:1,MP:1', x:1, y:9, info: 'ひつじだよ'}, isCharacterSetupedWell],
+['キャラクター修正 (change 名前含まず指定ミス)', 'changeCharacter', {room: 1, targetName:'存在しない名前', isHide:'', counters: 'HP:8,MP:8', x:8, y:8, info: 'ひつじなの！'}, isNG],
+['キャラクター修正 (change 名前含まず)', 'changeCharacter', {room: 1, targetName:'ひつじ', isHide:'', counters: 'HP:8,MP:8', x:8, y:8, info: 'ひつじなの！'}, isCharacterUpdatedWellWithoutName],
+['キャラクター修正 (update 名前含まず)', 'updateCharacter', {room: 1, targetName:'ひつじ', isHide:'', counters: 'HP:32,LOVE:hiyoko'}, isCharacterUpdatedWellUpdateMethod],
+['キャラクター修正 (change 名前含むが既存の名前)', 'changeCharacter', {room: 1, targetName:'ひつじ', name:'ひつじ'}, isExist],
+['キャラクター修正 (change 名前含む)', 'changeCharacter', {room: 1, targetName:'ひつじ', name:'ひつつーん', isHide:'12', counters: 'HP:1,MP:1', x:1, y:9, info: 'ひつじだよ'}, isCharacterSetupedWell],
+['キャラクタ―追加の結果', 'getCharacters', {room: 1}, charactersCount2],
+
+['どどんとふ互換 存在しないコマンド', 'DodontoFServer.rb', {room: 1, webif:'not_found'}, isNG],
+['どどんとふ互換 非サポートコマンド', 'DodontoFServer.rb', {room: 1, webif:'notSupportedCommand'}, isNG],
+
+['どどんとふ互換 refresh', 'DodontoFServer.rb', {room: 1, webif:'refresh', characters:1, map:1}, charactersCount2],
+['どどんとふ互換 addCharacter', 'addCharacter', {room: 1, name:'こひつじ', isHide:'12', counters: 'HP:1,MP:1', x:1, y:9, info: 'ひつじだよ'}, isCharacterSetupedWell],
+['どどんとふ互換 changeCharacter', 'changeCharacter', {room: 1, targetName:'こひつじ', name:'ひつつーん！', isHide:'', counters: 'HP:8,MP:8', x:8, y:8, info: 'ひつじなの！'}, isCharacterUpdatedWellWithoutName],
+
+['メモ一覧取得 (ない)', 'getMemos', {room: 1}, memoCount0],
+['メモ追加', 'addMemo', {room: 1, message:'ひよこ'}],
+['メモ追加はキャラクター一覧に影響がない', 'getCharacters', {room: 1}, charactersCount3],
+['メモ追加', 'addMemo', {room: 1, message:'ひつじ'}],
+['メモ一覧取得 (2件)', 'getMemos', {room: 1}, memoCount2],
+['メモ追加', 'addMemo', {room: 1, message:'ひよこ', name:'ひよこのこ'}],
+['メモ一覧取得 (ひよこのこ)', 'getMemos', {room: 1}, isIncludedTitleHiyokonoko],
+['メモ更新 (ひよこのこ)', 'changeMemo', {room: 1, targetId:'ひよこのこ', message:'ひよこのこ'}, isIncludedBodyHiyokonoko],
+['メモ一覧取得 (3件)', 'getMemos', {room: 1}, memoCount3],
+['メモ削除 (ひよこのこ)', 'removeMemo', {room: 1, targetId:'ひよこのこ'}],
+['メモ一覧取得 (2件)', 'getMemos', {room: 1}, memoCount2],
+['どどんとふ互換 refresh でメモも含めて取得', 'DodontoFServer.rb', {room: 1, webif:'refresh', characters:0, map:0}, charactersCount5],
+
+['パスワードがない部屋へのパスワードを付けての入室', 'getCharacters', {room: 1, password: 'dummy'}],
+['パスワードがある部屋の作成 (見学不可)', 'getCharacters', {room: 2, password: 'dummy'}],
+['パスワードが間違った場合 (見学不可)', 'getCharacters', {room: 2, password: 'invalidPass'}, isNG],
+['パスワードがなしの場合 (見学不可)', 'getCharacters', {room: 2}, isNG],
+['パスワードがある部屋の作成 (見学可)', 'getCharacters', {room: 3, password: 'dummy', isVisitable: '1'}],
+['パスワードが間違った場合 (見学可)', 'getCharacters', {room: 3, password: 'invalidPass'}],
+['パスワードがなしの場合 (見学可)', 'getCharacters', {room: 3}]
+];
+
+function evaluate(array, num, opt_lastTestResult) {
+	if(array.length === 0) {
+		$result.parent().css('background-color', 'aquamarine');
+		return;
+	}
+	var target = array.shift();
+	
+	$.ajax({
+		type:'get',
+		url: 'http://127.0.0.1:3001/' + target[1],
+		data: target[2],
+		async:true,
+		dataType:'jsonp'
+	}).done(function(result) {
+		var testResult = {};
+		try {
+			testResult = (target[3] || isOK)(result);
+		} catch(e) {
+			testResult.result = result.result + ' <br/> ' + e.toString();
+		}
+		if(testResult.result === 'OK') {
+			$result.append('<p>test ' + num + ' is passed (' + target[0] + ')</p>');
+			evaluate(array, num + 1, testResult);
+		} else {
+			console.error('TEST ' + num + ' is failed.\n', target, testResult, result);
+			$result.parent().css('background-color', 'salmon');
+			$result.append('<p>test ' + num + ' is failed (Result: ' + testResult.result + ') (' + target[0] + ')</p>');
+		}
+	}).fail(function(result) {
+		$result.parent().css('background-color', 'salmon');
+		$result.append('<p>test ' + num + ' is failed (Network error?)</p>');
+	});
+};
+
+evaluate(tests, 1);
+</script>
+</body>
+</html>

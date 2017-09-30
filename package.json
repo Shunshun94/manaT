@@ -1,0 +1,29 @@
+{
+  "name": "manat",
+  "version": "0.3.0",
+  "description": "Manager for Trpg characters' info",
+  "keywords": ["TRPG", "character", "object", "store"],
+  "license": "BSD-3-Clause",
+  "scripts": {
+    "start": "node app.js",
+    "dump": "curl http://127.0.0.1:$npm_package_config_port/getAll > dump_$(date +'%s') || curl https://127.0.0.1:$npm_package_config_port/getAll -k > dump_$(date +'%s')"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Shunshun94/manaT.git"
+  },
+  "author": "Shunshun94 <shunshun9460@gmail.com> (https://twitter.com/Shunshun94)",
+  "bugs": {
+    "url": "https://github.com/Shunshun94/manaT/issues"
+  },
+  "homepage": "https://github.com/Shunshun94/manaT",
+  "config": {
+  	"port": "3001",
+  	"key": "",
+  	"crt": "",
+  	"passphrase": ""
+  },
+  "dependencies": {
+    "express": ">=4.15.4"
+  }
+}
