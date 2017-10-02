@@ -97,6 +97,11 @@ WebIF の内容を参考にしました。本アプリにはこの WebIF との�
 [サイバーなゲーム制作](http://condor.netgamers.jp/) が配布なさっている素材を利用して作成しています。
 利用条件は同サイトの他、 [ツクマテ](http://tm.lucky-duet.com/viewtopic.php?f=15&t=3222) にも記載があります。
 
+#### floorTile05.png ～ floorTile07.png
+
+[​コミュ将の素材倉庫](https://comshou.wixsite.com/com-sho) が配布なさっている素材を利用して作成しています。
+利用条件は同サイトに記載されています。
+
 ### 本アプリのライセンス
 
 [3-clause BSD license](LICENSE) (修正 BSD ライセンス) で配布しています。
