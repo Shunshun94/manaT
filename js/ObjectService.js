@@ -1,8 +1,8 @@
 const crypto = require('crypto');
-const ObjectDAO = require('./ObjectDAO.js');
+const daoFactory = require('./dao/DaoFactory.js');
 
 const ObjectService = function() {
-	this.objectDAO = new ObjectDAO();
+	this.objectDAO = daoFactory.getObjectDao();
 };
 
 ObjectService.prototype.hash = function(seed) {
