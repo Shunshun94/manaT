@@ -81,15 +81,6 @@ ManaTController.prototype.DodontoFServer = function (req, res) {
 	}
 };
 
-ManaTController.prototype.addCharacter = function (req, res) {
-	try {
-		var character = service.addCharacter(req.query, service.generateTenantId(req));
-		res.jsonp({result: 'OK', data: character});
-	} catch (e) {
-		res.jsonp(errorReturn(e, req));
-	}
-};
-
 ManaTController.prototype.changeCharacter = function (req, res) {
 	try {
 		var character = service.changeCharacter(req.query, service.generateTenantId(req));
@@ -136,9 +127,7 @@ ManaTController.prototype.getCharacters = function (req, res) {
 	}
 };
 
-ManaTController.prototype.addMemo = function (req, res) {
-	this.addObject(req, res, 'addMemo');
-};
+
 
 ManaTController.prototype.changeMemo = function (req, res) {
 	try {
@@ -179,6 +168,8 @@ ManaTController.prototype.addObject  = function (req, res, opt_method, opt_key) 
 	}
 };
 
+ManaTController.prototype.addCharacter = function (req, res) {this.addObject(req, res, 'addCharacter');};
+ManaTController.prototype.addMemo = function (req, res) {this.addObject(req, res, 'addMemo');};
 ManaTController.prototype.addFloorTile  = function (req, res) {};
 ManaTController.prototype.addMapMask  = function (req, res) {};
 ManaTController.prototype.addMapMarker  = function (req, res) {};
