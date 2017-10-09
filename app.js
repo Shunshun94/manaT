@@ -25,7 +25,7 @@ app.get('/removeCharacter', controller.removeCharacter);
 app.get('/getCharacter', controller.getCharacter);
 app.get('/getCharacters', controller.getCharacters);
 
-app.get('/addMemo', controller.addMemo);
+app.get('/addMemo', controller.addMemo.bind(controller));
 app.get('/changeMemo', controller.changeMemo);
 app.get('/removeMemo', controller.removeMemo);
 app.get('/getMemos', controller.getMemos);

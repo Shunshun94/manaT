@@ -137,12 +137,7 @@ ManaTController.prototype.getCharacters = function (req, res) {
 };
 
 ManaTController.prototype.addMemo = function (req, res) {
-	try {
-		var memo = service.addMemo(req.query, service.generateTenantId(req));
-		res.jsonp({result: 'OK', data: memo});
-	} catch (e) {
-		res.jsonp(errorReturn(e, req));
-	}
+	this.addObject(req, res, 'addMemo');
 };
 
 ManaTController.prototype.changeMemo = function (req, res) {
@@ -172,10 +167,13 @@ ManaTController.prototype.getMemos = function (req, res) {
 	}
 };
 
-ManaTController.prototype.addObject  = function (req, res) {
+ManaTController.prototype.addObject  = function (req, res, opt_method, opt_key) {
 	try {
-		var object = service.addObject(req.query, service.generateTenantId(req));
-		res.jsonp({result: 'OK', data: object});
+		var method = opt_method || 'addObject';
+		var object = service[method].apply(service, [req.query, service.generateTenantId(req)]);
+		var resultData = {result: 'OK'};
+		resultData[opt_key || 'data'] = object;
+		res.jsonp(resultData);
 	} catch (e) {
 		res.jsonp(errorReturn(e, req));
 	}
