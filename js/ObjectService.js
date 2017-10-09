@@ -167,6 +167,7 @@ ObjectService.prototype.updateCharacter = function(query, tenantId) {
 	var counters = ['counters', 'statusAlias'];
 	
 	for(var key in query) {
+		// includes is better but, version problem...
 		if(elements.indexOf(key) > -1) {
 			if(key === 'image') {
 				characterData.imageName = query[key];
@@ -240,6 +241,22 @@ ObjectService.prototype.changeMemo = function(query, tenantId) {
 	return this.objectDAO.changeObject.apply(this.objectDAO, [memo, tenantId, query.room, password, query.isVisitable]);
 };
 
+ObjectService.prototype.addObject = function(query, tenantId) {
+	this.queryValidation(['room', 'type', ['targetId', 'targetName', 'imgId']]);
+	var data = {};
+
+	for(var key in query) {
+		if(['room', 'tenant', 'callback', 'password', 'isVisitable'].indexOf(key) > -1) {
+			// No action
+		} else if(['targetId', 'targetName', 'imgId'].indexOf(key) > -1) {
+			data.imgId = query[key];
+		} else {
+			data[key] = query[key];
+		}
+	}
+	var password = query.password ? this.hash(query.password + tenantId) : '';
+	return this.objectDAO.addObject.apply(this.objectDAO, [memo, tenantId, query.room, password, query.isVisitable]);
+};
 
 ObjectService.prototype.removeObject = function(query, tenantId) {
 	this.queryValidation(query, ['room', ['targetId', 'targetName', 'imgId']]);
