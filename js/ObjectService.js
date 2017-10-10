@@ -277,6 +277,21 @@ ObjectService.prototype.addFloorTile = function(query, tenantId) {
 	return this.addObject(map, tenantId);
 };
 
+ObjectService.prototype.addDiceSymbol = function(query, tenantId) {
+	var map = {
+			room: query.room,
+			type: 'diceSymbol',
+			imgId: query.targetId || query.targetName || query.imgId || query.name || false,
+			x:this.numberlize(query.x),
+			y:this.numberlize(query.y),
+			number:this.numberlize(query.number, 1),
+			maxNumber:this.numberlize(query.maxNumber, 6),
+			owner: query.owner || ''
+		};
+		
+		return this.addObject(map, tenantId);
+	};
+
 ObjectService.prototype.removeObject = function(query, tenantId) {
 	this.queryValidation(query, ['room', ['targetId', 'targetName', 'imgId']]);
 	

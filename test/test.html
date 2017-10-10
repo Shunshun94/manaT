@@ -226,6 +226,10 @@ var tests = [
 ['フロアタイル追加', 'addFloorTile', {room: 1, x:2, y:2, width:3, height:3}],
 ['フロアタイル追加', 'addFloorTile', {room: 1, x:0, y:2, width:2, height:2, image: 'http://img-cdn.jg.jugem.jp/ae3/253152/20140123_400551.png'}],
 ['フロアタイル追加 (部屋番号がない)', 'addFloorTile', {}, isNG],
+['ダイスシンボル追加', 'addDiceSymbol', {room: 1, x:0, y:4, number:2, maxNumber: 5, owner:'こねこ'}],
+['ダイスシンボル追加', 'addDiceSymbol', {room: 1, x:0, y:5, owner:'こねこ'}],
+['ダイスシンボル追加', 'addDiceSymbol', {room: 1, x:0, y:6, number:4, maxNumber: 10}],
+
 ['LINE'],
 ['パスワードがない部屋へのパスワードを付けての入室', 'getCharacters', {room: 1, password: 'dummy'}],
 ['パスワードがある部屋の作成 (見学不可)', 'getCharacters', {room: 2, password: 'dummy'}],
