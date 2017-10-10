@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 const daoFactory = require('./dao/DaoFactory.js');
+const PicsCatalog = require('../images/picsCatalog.js');
 
 const ObjectService = function() {
 	this.objectDAO = daoFactory.getObjectDao();
@@ -242,20 +243,38 @@ ObjectService.prototype.changeMemo = function(query, tenantId) {
 };
 
 ObjectService.prototype.addObject = function(query, tenantId) {
-	this.queryValidation(['room', 'type', ['targetId', 'targetName', 'imgId']]);
-	var data = {};
+	this.queryValidation(query, ['room', 'type']);
+	var data = {type: query.type};
 
 	for(var key in query) {
 		if(['room', 'tenant', 'callback', 'password', 'isVisitable'].indexOf(key) > -1) {
 			// No action
-		} else if(['targetId', 'targetName', 'imgId'].indexOf(key) > -1) {
+		} else if(['targetId', 'targetName', 'imgId', 'name'].indexOf(key) > -1) {
 			data.imgId = query[key];
 		} else {
 			data[key] = query[key];
 		}
 	}
+	if(! Boolean(data.imgId)) {
+		data.imgId = data.type + '_' + (new Date()).getTime()
+	}
 	var password = query.password ? this.hash(query.password + tenantId) : '';
-	return this.objectDAO.addObject.apply(this.objectDAO, [memo, tenantId, query.room, password, query.isVisitable]);
+	return this.objectDAO.addObject.apply(this.objectDAO, [data, tenantId, query.room, password, query.isVisitable]);
+};
+
+ObjectService.prototype.addFloorTile = function(query, tenantId) {
+	var map = {
+		room: query.room,
+		type: 'floorTile',
+		imgId: query.targetId || query.targetName || query.imgId || query.name || false,
+		imageUrl: query.image || query.imageSource || PicsCatalog.getRandom('floorTile'),
+		width:this.numberlize(query.width, 1),
+		height:this.numberlize(query.height, 1),
+		x:this.numberlize(query.x),
+		y:this.numberlize(query.y)
+	};
+	
+	return this.addObject(map, tenantId);
 };
 
 ObjectService.prototype.removeObject = function(query, tenantId) {

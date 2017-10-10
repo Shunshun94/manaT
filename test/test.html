@@ -6,6 +6,7 @@
 </head>
 <body>
 <div id="result"></div>
+<a href="http://shunshun94.web.fc2.com/sweet/map.html?url=http://127.0.0.1:3001/DodontoFServer.rb&room=1">見た目確認</a>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script>
 var $result = $('#result');
@@ -221,7 +222,10 @@ var tests = [
 ['メモ一覧取得 (2件)', 'getMemos', {room: 1}, memoCount2],
 ['どどんとふ互換 refresh でメモも含めて取得', 'DodontoFServer.rb', {room: 1, webif:'refresh', characters:0, map:0}, charactersCount5],
 
-
+['LINE'],
+['フロアタイル追加', 'addFloorTile', {room: 1, x:2, y:2, width:3, height:3}],
+['フロアタイル追加', 'addFloorTile', {room: 1, x:0, y:2, width:2, height:2, image: 'http://img-cdn.jg.jugem.jp/ae3/253152/20140123_400551.png'}],
+['フロアタイル追加 (部屋番号がない)', 'addFloorTile', {}, isNG],
 ['LINE'],
 ['パスワードがない部屋へのパスワードを付けての入室', 'getCharacters', {room: 1, password: 'dummy'}],
 ['パスワードがある部屋の作成 (見学不可)', 'getCharacters', {room: 2, password: 'dummy'}],

@@ -170,12 +170,12 @@ ManaTController.prototype.addObject  = function (req, res, opt_method, opt_key) 
 
 ManaTController.prototype.addCharacter = function (req, res) {this.addObject(req, res, 'addCharacter');};
 ManaTController.prototype.addMemo = function (req, res) {this.addObject(req, res, 'addMemo');};
-ManaTController.prototype.addFloorTile  = function (req, res) {};
-ManaTController.prototype.addMapMask  = function (req, res) {};
-ManaTController.prototype.addMapMarker  = function (req, res) {};
-ManaTController.prototype.addChit  = function (req, res) {};
-ManaTController.prototype.addDiceSymbol  = function (req, res) {};
-ManaTController.prototype.addCard  = function (req, res) {};
+ManaTController.prototype.addFloorTile  = function (req, res) {this.addObject(req, res, 'addFloorTile');};
+ManaTController.prototype.addMapMask  = function (req, res) {this.addObject(req, res, 'addMapMask');};
+ManaTController.prototype.addMapMarker  = function (req, res) {this.addObject(req, res, 'addMapMaker');};
+ManaTController.prototype.addChit  = function (req, res) {this.addObject(req, res, 'addChit');};
+ManaTController.prototype.addDiceSymbol  = function (req, res) {this.addObject(req, res, 'addDiceSymbol');};
+ManaTController.prototype.addCard  = function (req, res) {this.addObject(req, res, 'addCard');};
 
 ManaTController.prototype.removeObject = function (req, res) {
 	try {

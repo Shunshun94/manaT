@@ -30,6 +30,8 @@ app.get('/changeMemo', controller.changeMemo);
 app.get('/removeMemo', controller.removeMemo);
 app.get('/getMemos', controller.getMemos);
 
+app.get('/addFloorTile', controller.addFloorTile.bind(controller));
+
 app.get('/getMap', controller.getMap);
 app.get('/setMap', controller.setMap);
 
