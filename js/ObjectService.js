@@ -279,18 +279,67 @@ ObjectService.prototype.addFloorTile = function(query, tenantId) {
 
 ObjectService.prototype.addDiceSymbol = function(query, tenantId) {
 	var map = {
-			room: query.room,
-			type: 'diceSymbol',
-			imgId: query.targetId || query.targetName || query.imgId || query.name || false,
-			x:this.numberlize(query.x),
-			y:this.numberlize(query.y),
-			number:this.numberlize(query.number, 1),
-			maxNumber:this.numberlize(query.maxNumber, 6),
-			owner: query.owner || ''
-		};
-		
-		return this.addObject(map, tenantId);
+		room: query.room,
+		type: 'diceSymbol',
+		imgId: query.targetId || query.targetName || query.imgId || query.name || false,
+		x:this.numberlize(query.x),
+		y:this.numberlize(query.y),
+		number:this.numberlize(query.number, 1),
+		maxNumber:this.numberlize(query.maxNumber, 6),
+		owner: query.owner || ''
 	};
+		
+	return this.addObject(map, tenantId);
+};
+
+ObjectService.prototype.addMapMask = function(query, tenantId) {
+	var map = {
+		room: query.room,
+		type: 'mapMask',
+		imgId: query.targetId || query.targetName || query.imgId || query.name || false,
+		color: query.color || 16711680,
+		alpha: query.opacity || query.alpha || 0.5,
+		width:this.numberlize(query.width, 1),
+		height:this.numberlize(query.height, 1),
+		x:this.numberlize(query.x),
+		y:this.numberlize(query.y)
+	};
+	
+	return this.addObject(map, tenantId);
+};
+
+ObjectService.prototype.addMapMarker = function(query, tenantId) {
+	var map = {
+		room: query.room,
+		type: 'mapMarker',
+		message: query.message || '-',
+		imgId: query.targetId || query.targetName || query.imgId || query.name || false,
+		color: query.color || false,
+		isPaint: this.boolealize(query.isPaint, false),
+		width:this.numberlize(query.width, 1),
+		height:this.numberlize(query.height, 1),
+		x:this.numberlize(query.x),
+		y:this.numberlize(query.y)
+	};
+	
+	return this.addObject(map, tenantId);
+};
+
+ObjectService.prototype.addChit = function(query, tenantId) {
+	var map = {
+		room: query.room,
+		type: 'chit',
+		message: query.message || '-',
+		imgId: query.targetId || query.targetName || query.imgId || query.name || false,
+		imageUrl: query.image || query.imageSource || PicsCatalog.getRandom('character'),
+		width:this.numberlize(query.width, 1),
+		height:this.numberlize(query.height, 1),
+		x:this.numberlize(query.x),
+		y:this.numberlize(query.y)
+	};
+	
+	return this.addObject(map, tenantId);
+};
 
 ObjectService.prototype.removeObject = function(query, tenantId) {
 	this.queryValidation(query, ['room', ['targetId', 'targetName', 'imgId']]);

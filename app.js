@@ -32,6 +32,9 @@ app.get('/getMemos', controller.getMemos);
 
 app.get('/addFloorTile', controller.addFloorTile.bind(controller));
 app.get('/addDiceSymbol', controller.addDiceSymbol.bind(controller));
+app.get('/addMapMask', controller.addMapMask.bind(controller));
+app.get('/addMapMarker', controller.addMapMarker.bind(controller));
+app.get('/addChit', controller.addChit.bind(controller));
 
 app.get('/getMap', controller.getMap);
 app.get('/setMap', controller.setMap);
