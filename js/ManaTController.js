@@ -177,6 +177,14 @@ ManaTController.prototype.addChit  = function (req, res) {this.addObject(req, re
 ManaTController.prototype.addDiceSymbol  = function (req, res) {this.addObject(req, res, 'addDiceSymbol');};
 ManaTController.prototype.addCard  = function (req, res) {this.addObject(req, res, 'addCard');};
 
+ManaTController.prototype.changeObject = function (req, res) {
+	try {
+		res.jsonp({result: 'OK', data: service.changeObject(req.query, service.generateTenantId(req))});
+	} catch (e) {
+		res.jsonp(errorReturn(e, req));
+	}
+};
+
 ManaTController.prototype.removeObject = function (req, res) {
 	try {
 		service.removeObject(req.query, service.generateTenantId(req));

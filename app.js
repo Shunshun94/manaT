@@ -36,6 +36,12 @@ app.get('/addMapMask', controller.addMapMask.bind(controller));
 app.get('/addMapMarker', controller.addMapMarker.bind(controller));
 app.get('/addChit', controller.addChit.bind(controller));
 
+app.get('/addObject', controller.addObject);
+app.get('/changeObject', controller.changeObject);
+app.get('/removeObject', controller.removeObject);
+app.get('/getObjects', controller.getObjects);
+
+
 app.get('/getMap', controller.getMap);
 app.get('/setMap', controller.setMap);
 

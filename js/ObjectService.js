@@ -262,6 +262,23 @@ ObjectService.prototype.addObject = function(query, tenantId) {
 	return this.objectDAO.addObject.apply(this.objectDAO, [data, tenantId, query.room, password, query.isVisitable]);
 };
 
+ObjectService.prototype.changeObject = function(query, tenantId) {
+	this.queryValidation(query, ['room', ['targetId', 'targetName', 'imgId']]);
+	var data = {};
+
+	for(var key in query) {
+		if(['room', 'tenant', 'callback', 'password', 'isVisitable'].indexOf(key) > -1) {
+			// No action
+		} else if(['targetId', 'targetName', 'imgId'].indexOf(key) > -1) {
+			data.imgId = query[key];
+		} else {
+			data[key] = query[key];
+		}
+	}
+	var password = query.password ? this.hash(query.password + tenantId) : '';
+	return this.objectDAO.changeObject.apply(this.objectDAO, [data, tenantId, query.room, password, query.isVisitable]);
+};
+
 ObjectService.prototype.addFloorTile = function(query, tenantId) {
 	var map = {
 		room: query.room,
