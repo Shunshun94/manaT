@@ -156,7 +156,7 @@ ManaTController.prototype.getMemos = function (req, res) {
 	}
 };
 
-ManaTController.prototype.addObject  = function (req, res, opt_method, opt_key) {
+ManaTController.prototype.addObject_ = function (req, res, opt_method, opt_key) {
 	try {
 		var method = opt_method || 'addObject';
 		var object = service[method].apply(service, [req.query, service.generateTenantId(req)]);
@@ -168,14 +168,15 @@ ManaTController.prototype.addObject  = function (req, res, opt_method, opt_key) 
 	}
 };
 
-ManaTController.prototype.addCharacter = function (req, res) {this.addObject(req, res, 'addCharacter');};
-ManaTController.prototype.addMemo = function (req, res) {this.addObject(req, res, 'addMemo');};
-ManaTController.prototype.addFloorTile  = function (req, res) {this.addObject(req, res, 'addFloorTile');};
-ManaTController.prototype.addMapMask  = function (req, res) {this.addObject(req, res, 'addMapMask');};
-ManaTController.prototype.addMapMarker  = function (req, res) {this.addObject(req, res, 'addMapMarker');};
-ManaTController.prototype.addChit  = function (req, res) {this.addObject(req, res, 'addChit');};
-ManaTController.prototype.addDiceSymbol  = function (req, res) {this.addObject(req, res, 'addDiceSymbol');};
-ManaTController.prototype.addCard  = function (req, res) {this.addObject(req, res, 'addCard');};
+ManaTController.prototype.addObject = function (req, res) {this.addObject_(req, res);};
+ManaTController.prototype.addCharacter = function (req, res) {this.addObject_(req, res, 'addCharacter');};
+ManaTController.prototype.addMemo = function (req, res) {this.addObject_(req, res, 'addMemo');};
+ManaTController.prototype.addFloorTile  = function (req, res) {this.addObject_(req, res, 'addFloorTile');};
+ManaTController.prototype.addMapMask  = function (req, res) {this.addObject_(req, res, 'addMapMask');};
+ManaTController.prototype.addMapMarker  = function (req, res) {this.addObject_(req, res, 'addMapMarker');};
+ManaTController.prototype.addChit  = function (req, res) {this.addObject_(req, res, 'addChit');};
+ManaTController.prototype.addDiceSymbol  = function (req, res) {this.addObject_(req, res, 'addDiceSymbol');};
+ManaTController.prototype.addCard  = function (req, res) {this.addObject_(req, res, 'addCard');};
 
 ManaTController.prototype.changeObject = function (req, res) {
 	try {
