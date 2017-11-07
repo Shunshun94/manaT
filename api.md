@@ -591,7 +591,7 @@ addObject 参照
 任 | `height` | `1` | `3` | チットの縦幅です
 任 | `x` | `0` | `3` | チットの x 座標です
 任 | `y` | `0` | `3` | チットの y 座標です
-任 | `imageUrl` | `(いずれかのデフォルト画像)` | `http://picture.store.example.com/floorTile.png` | フロアタイルの画像です。`image` `imageSource` でも指定できます
+任 | `imageUrl` | `https://shunshun94.github.io/manaT/images/default.png` | `http://picture.store.example.com/myCharacter.png` | チットの画像です。`image` `imageSource` でも指定できます
 
 
 ### レスポンス・レスポンス例
