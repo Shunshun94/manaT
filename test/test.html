@@ -6,6 +6,7 @@
 </head>
 <body>
 <div id="result"></div>
+<a href="http://shunshun94.web.fc2.com/sweet/map.html?url=http://127.0.0.1:3001/DodontoFServer.rb&room=1">見た目確認</a>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script>
 var $result = $('#result');
@@ -54,6 +55,24 @@ function memoCount0(result) {return checkExpectedCount(result.memos, 0);}
 function memoCount1(result) {return checkExpectedCount(result.memos, 1);}
 function memoCount2(result) {return checkExpectedCount(result.memos, 2);}
 function memoCount3(result) {return checkExpectedCount(result.memos, 3);}
+
+function count16(result) {return checkExpectedCount(result.characters, 16);}
+
+function isNotHereSonzaiShinaiMemo(result) {
+	if(result.result === '「存在しないメモ」が見つかりませんでした') {
+		return {result: 'OK'};
+	} else {
+		return {result: 'エラーメッセージが "「存在しないメモ」が見つかりませんでした" であることを期待されているのに実際には「' + result.result + '」でした'};
+	}
+}
+
+function isNotFoundCharacter(result) {
+	if(result.result === '「存在しない名前」という名前のキャラクターは存在しません') {
+		return {result: 'OK'};
+	} else {
+		return {result: 'エラーメッセージが "「存在しない名前」という名前のキャラクターは存在しません" であることを期待されているのに実際には「' + result.result + '」でした'};
+	}
+}
 
 function isIncludedTitleHiyokonoko(result) {
 	if(result.memos.filter(function(memo) {
@@ -121,6 +140,16 @@ function isCharacterUpdatedWellUpdateMethod(result) {
 	return {result: 'OK'};
 }
 
+function changeObjectCheck(result) {
+	if(result.data.room) {
+		return {result: 'result.data.room は存在しないことが望まれますが、実際には ' + result.data.room + 'でした'};
+	}
+	if(! result.data.isHide) {
+		return {result: 'result.data.isHide は true であることが望まれますが、実際には ' + result.data.isHide + 'でした'};
+	}
+	return {result: 'OK'};
+}
+
 function isCharacterUpdatedWellWithoutName(result) {
 	var counters = {HP: 8, MP: 8};
 	var resultData = {x:8, y:8, info: 'ひつじなの！', isHide: false};
@@ -145,12 +174,23 @@ function isCharacterUpdatedWellWithoutName(result) {
 	return {result: 'OK'};
 }
 
+function isMap25(result) {
+	if(Number(result.mapData.xMax) === 5 && Number(result.mapData.yMax) === 5) {
+		return {result: 'OK'};
+	} else {
+		return {result: 'マップが 5×5 であることが期待されますが、実際には' + result.mapData.xMax + '×' +result.mapData.yMax + 'でした。なお、初期値は 32×18 です。'};
+	}
+}
+
 var tests = [
 ['初期化', 'removeAll', {}],
 ['部屋を指定し損ねる', 'addCharacter', {}, isNoRoom],
 ['名前を指定し損ねる', 'addCharacter', {room: 1}, isNoName],
 ['名前を指定し損ねる', 'getCharacters', {}, isNoRoom],
 ['キャラクター一覧取得', 'getCharacters', {room: 1}, charactersCount0],
+
+
+['LINE'],
 ['キャラクター追加', 'addCharacter', {room: 1, name:'ひよこ'}],
 ['追加したものを一覧から取得できるか', 'getCharacters', {room: 1}, charactersCount1],
 ['追加したものを指定して取得できるか', 'getCharacter', {room: 1, targetName:'ひよこ'}],
@@ -158,6 +198,7 @@ var tests = [
 ['キャラクター追加', 'addCharacter', {room: 1, name:'ひつこ'}],
 ['キャラクター追加 (重複名前でミス)', 'addCharacter', {room: 1, name:'ひつこ'}, isNG],
 ['キャラクター削除', 'removeCharacter', {room: 1, targetName:'ひよこ'}],
+['キャラクター削除 (存在しない子)', 'removeCharacter', {room: 1, targetName:'存在しない名前'}, isNotFoundCharacter],
 ['キャラクター追加', 'addCharacter', {room: 1, name:'ひつじ', isHide:'12', counters: 'HP:1,MP:1', x:1, y:9, info: 'ひつじだよ'}, isCharacterSetupedWell],
 ['キャラクター修正 (change 名前含まず指定ミス)', 'changeCharacter', {room: 1, targetName:'存在しない名前', isHide:'', counters: 'HP:8,MP:8', x:8, y:8, info: 'ひつじなの！'}, isNG],
 ['キャラクター修正 (change 名前含まず)', 'changeCharacter', {room: 1, targetName:'ひつじ', isHide:'', counters: 'HP:8,MP:8', x:8, y:8, info: 'ひつじなの！'}, isCharacterUpdatedWellWithoutName],
@@ -166,13 +207,19 @@ var tests = [
 ['キャラクター修正 (change 名前含む)', 'changeCharacter', {room: 1, targetName:'ひつじ', name:'ひつつーん', isHide:'12', counters: 'HP:1,MP:1', x:1, y:9, info: 'ひつじだよ'}, isCharacterSetupedWell],
 ['キャラクタ―追加の結果', 'getCharacters', {room: 1}, charactersCount2],
 
+['LINE'],
+['マップ変更', 'setMap', {room: 1, size: 5}],
+['マップ取得', 'getMap', {room: 1}, isMap25],
+
+['LINE'],
 ['どどんとふ互換 存在しないコマンド', 'DodontoFServer.rb', {room: 1, webif:'not_found'}, isNG],
 ['どどんとふ互換 非サポートコマンド', 'DodontoFServer.rb', {room: 1, webif:'notSupportedCommand'}, isNG],
-
 ['どどんとふ互換 refresh', 'DodontoFServer.rb', {room: 1, webif:'refresh', characters:1, map:1}, charactersCount2],
 ['どどんとふ互換 addCharacter', 'addCharacter', {room: 1, name:'こひつじ', isHide:'12', counters: 'HP:1,MP:1', x:1, y:9, info: 'ひつじだよ'}, isCharacterSetupedWell],
 ['どどんとふ互換 changeCharacter', 'changeCharacter', {room: 1, targetName:'こひつじ', name:'ひつつーん！', isHide:'', counters: 'HP:8,MP:8', x:8, y:8, info: 'ひつじなの！'}, isCharacterUpdatedWellWithoutName],
 
+
+['LINE'],
 ['メモ一覧取得 (ない)', 'getMemos', {room: 1}, memoCount0],
 ['メモ追加', 'addMemo', {room: 1, message:'ひよこ'}],
 ['メモ追加はキャラクター一覧に影響がない', 'getCharacters', {room: 1}, charactersCount3],
@@ -183,16 +230,48 @@ var tests = [
 ['メモ更新 (ひよこのこ)', 'changeMemo', {room: 1, targetId:'ひよこのこ', message:'ひよこのこ'}, isIncludedBodyHiyokonoko],
 ['メモ一覧取得 (3件)', 'getMemos', {room: 1}, memoCount3],
 ['メモ削除 (ひよこのこ)', 'removeMemo', {room: 1, targetId:'ひよこのこ'}],
+['メモ削除 (存在しないもの)', 'removeMemo', {room: 1, targetId:'存在しないメモ'}, isNotHereSonzaiShinaiMemo],
 ['メモ一覧取得 (2件)', 'getMemos', {room: 1}, memoCount2],
 ['どどんとふ互換 refresh でメモも含めて取得', 'DodontoFServer.rb', {room: 1, webif:'refresh', characters:0, map:0}, charactersCount5],
 
+['LINE'],
+['フロアタイル追加', 'addFloorTile', {room: 1, x:2, y:2, width:3, height:3}],
+['フロアタイル追加', 'addFloorTile', {room: 1, x:0, y:2, width:2, height:2, image: 'http://img-cdn.jg.jugem.jp/ae3/253152/20140123_400551.png'}],
+['フロアタイル追加 (部屋番号がない)', 'addFloorTile', {}, isNG],
+['ダイスシンボル追加', 'addDiceSymbol', {room: 1, x:0, y:4, number:2, maxNumber: 5, owner:'こねこ'}],
+['ダイスシンボル追加', 'addDiceSymbol', {room: 1, x:0, y:5, owner:'こねこ'}],
+['ダイスシンボル追加', 'addDiceSymbol', {room: 1, x:0, y:6, number:4, maxNumber: 10}],
+['マップマスク追加', 'addMapMask', {room: 1, x:0, y:4, width:3, height:3}],
+['マップマスク追加', 'addMapMask', {room: 1, x:3, y:4, width:3, height:3,　color: 255*256, alpha:0.8}],
+['マップマーカー追加', 'addMapMarker', {room: 1, x:2, y:6, width:3, height:3, message: 'ここにいる'}],
+['マップマーカー追加', 'addMapMarker', {room: 1, x:5, y:6, width:3, height:3,　color: 255*256, isPaint:true}],
+['チット追加', 'addChit', {room: 1, x:6, y:6, width:3, height:1}],
+['チット追加', 'addChit', {room: 1, x:6, y:7, image: 'https://pbs.twimg.com/profile_images/852893935772905477/5YBolAUp_400x400.jpg'}],
+
+['LINE'],
+['Object 変更', 'changeObject', {room: 1, targetId: 'ひつつーん！', isHide: '17'}, changeObjectCheck],
+['Object 追加', 'addObject', {room: 1, type: 'dummy', value: 'ひよこ'}],
+['Object 追加 (type なし)', 'addObject', {room: 1, value: 'ひよこ'}, isNG],
+['Object 削除', 'removeObject', {room: 1, targetId: 'ひつつーん！'}],
+['Object 取得 (16)', 'getObjects', {room: 1}, count16],
+
+['LINE'],
 ['パスワードがない部屋へのパスワードを付けての入室', 'getCharacters', {room: 1, password: 'dummy'}],
 ['パスワードがある部屋の作成 (見学不可)', 'getCharacters', {room: 2, password: 'dummy'}],
-['パスワードが間違った場合 (見学不可)', 'getCharacters', {room: 2, password: 'invalidPass'}, isNG],
-['パスワードがなしの場合 (見学不可)', 'getCharacters', {room: 2}, isNG],
+['パスワードが正しい場合 (追加) (見学不可)', 'addCharacter', {room: 2, password: 'dummy', name:'ひつじ', isHide:'12', counters: 'HP:1,MP:1', x:1, y:9, info: 'ひつじだよ'}, isCharacterSetupedWell],
+['パスワードが間違った場合 (追加) (見学不可/NG)', 'addCharacter', {room: 2, password: 'invalidPass', name:'ひつじ', isHide:'12', counters: 'HP:1,MP:1', x:1, y:9, info: 'ひつじだよ'}, isNG],
+['パスワードがなしの場合 (追加) (見学不可/NG)', 'addCharacter', {room: 2, name:'ひつじ', isHide:'12', counters: 'HP:1,MP:1', x:1, y:9, info: 'ひつじだよ'}, isNG],
+['パスワードが正しい場合 (閲覧) (見学不可)', 'getCharacters', {room: 2, password: 'dummy'}, charactersCount1],
+['パスワードが間違った場合 (閲覧) (見学不可/NG)', 'getCharacters', {room: 2, password: 'invalidPass'}, isNG],
+['パスワードがなしの場合 (閲覧) (見学不可/NG)', 'getCharacters', {room: 2}, isNG],
+
 ['パスワードがある部屋の作成 (見学可)', 'getCharacters', {room: 3, password: 'dummy', isVisitable: '1'}],
-['パスワードが間違った場合 (見学可)', 'getCharacters', {room: 3, password: 'invalidPass'}],
-['パスワードがなしの場合 (見学可)', 'getCharacters', {room: 3}]
+['パスワードが正しい場合 (追加) (見学可)', 'addCharacter', {room: 3, password: 'dummy', name:'ひつじ', isHide:'12', counters: 'HP:1,MP:1', x:1, y:9, info: 'ひつじだよ'}, isCharacterSetupedWell],
+['パスワードが間違った場合 (追加) (見学可/NG)', 'addCharacter', {room: 3, password: 'invalidPass', name:'ひつじ', isHide:'12', counters: 'HP:1,MP:1', x:1, y:9, info: 'ひつじだよ'}, isNG],
+['パスワードがなしの場合 (追加) (見学可/NG)', 'addCharacter', {room: 3, name:'ひつじ', isHide:'12', counters: 'HP:1,MP:1', x:1, y:9, info: 'ひつじだよ'}, isNG],
+['パスワードが正しい場合 (閲覧) (見学可)', 'getCharacters', {room: 3, password: 'dummy'}, charactersCount1],
+['パスワードが間違った場合 (閲覧) (見学可/OK)', 'getCharacters', {room: 3, password: 'invalidPass'}],
+['パスワードがなしの場合 (閲覧) (見学可/OK)', 'getCharacters', {room: 3}, charactersCount1],
 ];
 
 function evaluate(array, num, opt_lastTestResult) {
@@ -201,6 +280,17 @@ function evaluate(array, num, opt_lastTestResult) {
 		return;
 	}
 	var target = array.shift();
+	
+try {
+	if(target[0] === 'LINE') {
+		$result.append('<hr/>');
+		evaluate(array, num, opt_lastTestResult);
+		return;
+	}
+} catch (exception) {
+	console.error(exception, target, array);
+	return;
+}
 	
 	$.ajax({
 		type:'get',

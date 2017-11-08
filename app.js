@@ -18,28 +18,31 @@ app.get('/DodontoFServer.rb', controller.DodontoFServer.bind(controller));
 
 app.get('/refresh', controller.refresh);
 
-app.get('/addCharacter', controller.addCharacter);
-
+app.get('/addCharacter', controller.addCharacter.bind(controller));
 app.get('/changeCharacter', controller.changeCharacter);
-
 app.get('/updateCharacter', controller.updateCharacter);
-
 app.get('/removeCharacter', controller.removeCharacter);
-
 app.get('/getCharacter', controller.getCharacter);
-
 app.get('/getCharacters', controller.getCharacters);
 
-app.get('/addMemo', controller.addMemo);
-
+app.get('/addMemo', controller.addMemo.bind(controller));
 app.get('/changeMemo', controller.changeMemo);
-
 app.get('/removeMemo', controller.removeMemo);
-
 app.get('/getMemos', controller.getMemos);
 
-app.get('/getMap', controller.getMap);
+app.get('/addFloorTile', controller.addFloorTile.bind(controller));
+app.get('/addDiceSymbol', controller.addDiceSymbol.bind(controller));
+app.get('/addMapMask', controller.addMapMask.bind(controller));
+app.get('/addMapMarker', controller.addMapMarker.bind(controller));
+app.get('/addChit', controller.addChit.bind(controller));
 
+app.get('/addObject', controller.addObject.bind(controller));
+app.get('/changeObject', controller.changeObject);
+app.get('/removeObject', controller.removeObject);
+app.get('/getObjects', controller.getObjects);
+
+
+app.get('/getMap', controller.getMap);
 app.get('/setMap', controller.setMap);
 
 function getDumps() {

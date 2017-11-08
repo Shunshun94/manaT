@@ -12,4 +12,9 @@ PicsCatalog.floorTile = [
 	BASE_URL + 'floorTile07.png'
 ];
 
+PicsCatalog.getRandom = function(type) {
+	var target = PicsCatalog[type];
+	return target[Math.floor(Math.random() * (target.length))];
+};
+
 module.exports = PicsCatalog;
