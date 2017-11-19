@@ -1,8 +1,9 @@
 const crypto = require('crypto');
-const ObjectDAO = require('./ObjectDAO.js');
+const daoFactory = require('./dao/DaoFactory.js');
+const PicsCatalog = require('../images/picsCatalog.js');
 
 const ObjectService = function() {
-	this.objectDAO = new ObjectDAO();
+	this.objectDAO = daoFactory.getObjectDao();
 };
 
 ObjectService.prototype.hash = function(seed) {
@@ -68,6 +69,14 @@ ObjectService.prototype.convertCounters = function(string) {
 	return result;
 };
 
+ObjectService.prototype.handleError = function(e, opt_errorMsg) {
+	if(e.target) {
+		throw opt_errorMsg ? 'Manat:' + opt_errorMsg : 'Manat:「' + e.target + '」が見つかりませんでした'
+	} else {
+		throw errorMsg;
+	}
+};
+
 ObjectService.prototype.getAll = function() {
 	return this.objectDAO.getAll();
 };
@@ -83,16 +92,16 @@ ObjectService.prototype.restoreFromDump = function(dump) {
 ObjectService.prototype.getObjects = function(query, tenantId) {
 	this.queryValidation(query, ['room']);
 	var time = query.characters || query.lastUpdateTime || query.lastUpdate || 0;
-	if(query.password) {
-		var password = this.hash(query.password + tenantId);
-		if(query.isVisitable) {
-			return this.objectDAO.getObjects(time, tenantId, query.room, password, query.isVisitable);
-		} else {
-			return this.objectDAO.getObjects(time, tenantId, query.room, password);
-		}
-	} else {
-		return this.objectDAO.getObjects(time, tenantId, query.room);
+	var filterFunction;
+	
+	if(query.type) {
+		filterFunction = function(object) {
+			return character.type === query.type;
+		};
 	}
+	
+	var password = query.password ? this.hash(query.password + tenantId) : '';
+	return this.objectDAO.getObjects.apply(this.objectDAO, [time, tenantId, query.room, password, query.isVisitable, filterFunction]);
 };
 
 ObjectService.prototype.addCharacter = function(query, tenantId) {
@@ -114,16 +123,8 @@ ObjectService.prototype.addCharacter = function(query, tenantId) {
 			counters: this.convertCounters(query.counters || '')
 		};
 
-	if(query.password) {
-		var password = this.hash(query.password + tenantId);
-		if(query.isVisitable) {
-			this.objectDAO.addCharacter(characterData, tenantId, query.room, password, query.isVisitable);
-		} else {
-			this.objectDAO.addCharacter(characterData, tenantId, query.room, password);
-		}
-	} else {
-		this.objectDAO.addCharacter(characterData, tenantId, query.room);
-	}
+	var password = query.password ? this.hash(query.password + tenantId) : '';
+	this.objectDAO.addCharacter.apply(this.objectDAO, [characterData, tenantId, query.room, password, query.isVisitable]);
 	
 	return characterData;
 };
@@ -153,20 +154,8 @@ ObjectService.prototype.changeCharacter = function(query, tenantId) {
 		}
 	}
 	
-	var result;
-
-	if(query.password) {
-		var password = this.hash(query.password + tenantId);
-		if(query.isVisitable) {
-			result = this.objectDAO.changeCharacter(characterData, tenantId, query.room, password, query.isVisitable);
-		} else {
-			result = this.objectDAO.changeCharacter(characterData, tenantId, query.room, password);
-		}
-	} else {
-		result = this.objectDAO.changeCharacter(characterData, tenantId, query.room);
-	}
-	
-	return result;
+	var password = query.password ? this.hash(query.password + tenantId) : '';
+	return this.objectDAO.changeCharacter.apply(this.objectDAO, [characterData, tenantId, query.room, password, query.isVisitable]);
 };
 
 ObjectService.prototype.updateCharacter = function(query, tenantId) {
@@ -179,6 +168,7 @@ ObjectService.prototype.updateCharacter = function(query, tenantId) {
 	var counters = ['counters', 'statusAlias'];
 	
 	for(var key in query) {
+		// includes is better but, version problem...
 		if(elements.indexOf(key) > -1) {
 			if(key === 'image') {
 				characterData.imageName = query[key];
@@ -193,64 +183,34 @@ ObjectService.prototype.updateCharacter = function(query, tenantId) {
 			characterData[key] = this.convertCounters(query[key]);
 		}
 	}
-	
-	var result;
 
-	if(query.password) {
-		var password = this.hash(query.password + tenantId);
-		if(query.isVisitable) {
-			result = this.objectDAO.updateCharacter(characterData, tenantId, query.room, password, query.isVisitable);
-		} else {
-			result = this.objectDAO.updateCharacter(characterData, tenantId, query.room, password);
-		}
-	} else {
-		result = this.objectDAO.updateCharacter(characterData, tenantId, query.room);
-	}
-	
-	return result;
+	var password = query.password ? this.hash(query.password + tenantId) : '';
+	return this.objectDAO.updateCharacter.apply(this.objectDAO, [characterData, tenantId, query.room, password, query.isVisitable]);
 };
 
 ObjectService.prototype.removeCharacter = function(query, tenantId) {
 	this.queryValidation(query, ['room', 'targetName']);
-	if(query.password) {
-		var password = this.hash(query.password + tenantId);
-		if(query.isVisitable) {
-			this.objectDAO.removeCharacter(query.targetName, tenantId, query.room, password, query.isVisitable);
-		} else {
-			this.objectDAO.removeCharacter(query.targetName, tenantId, query.room, password);
-		}
-	} else {
-		this.objectDAO.removeCharacter(query.targetName, tenantId, query.room);
+	var password = query.password ? this.hash(query.password + tenantId) : '';
+	try {
+		this.objectDAO.removeObject.apply(this.objectDAO, [query.targetName, tenantId, query.room, password, query.isVisitable]);
+	} catch(e) {
+		this.handleError(e, '「' + query.targetName + '」という名前のキャラクターは存在しません')
 	}
+	
 };
 
 ObjectService.prototype.getCharacter = function(query, tenantId) {
 	this.queryValidation(query, ['room', 'targetName']);
-	if(query.password) {
-		var password = this.hash(query.password + tenantId);
-		if(query.isVisitable) {
-			return this.objectDAO.getCharacter(query.targetName, tenantId, query.room, password, query.isVisitable);
-		} else {
-			return this.objectDAO.getCharacter(query.targetName, tenantId, query.room, password);
-		}
-	} else {
-		return this.objectDAO.getCharacter(query.targetName, tenantId, query.room);
-	}
+	var password = query.password ? this.hash(query.password + tenantId) : '';
+	return this.objectDAO.getCharacter.apply(this.objectDAO, [query.targetName, tenantId, query.room, password, query.isVisitable]);
 };
 
 ObjectService.prototype.getCharacters = function(query, tenantId) {
 	this.queryValidation(query, ['room']);
 	var time = query.characters || query.lastUpdateTime || query.lastUpdate || 0;
-	if(query.password) {
-		var password = this.hash(query.password + tenantId);
-		if(query.isVisitable) {
-			return this.objectDAO.getCharacters(time, tenantId, query.room, password, query.isVisitable);
-		} else {
-			return this.objectDAO.getCharacters(time, tenantId, query.room, password);
-		}
-	} else {
-		return this.objectDAO.getCharacters(time, tenantId, query.room);
-	}
+	
+	var password = query.password ? this.hash(query.password + tenantId) : '';
+	return this.objectDAO.getCharacters.apply(this.objectDAO, [time, tenantId, query.room, password, query.isVisitable]);
 };
 
 ObjectService.prototype.addMemo = function(query, tenantId) {
@@ -267,16 +227,8 @@ ObjectService.prototype.addMemo = function(query, tenantId) {
 		width:this.numberlize(query.x, 1)
 	};
 	
-	if(query.password) {
-		var password = this.hash(query.password + tenantId);
-		if(query.isVisitable) {
-			return this.objectDAO.addMemo(memo, tenantId, query.room, password, query.isVisitable);
-		} else {
-			return this.objectDAO.addMemo(memo, tenantId, query.room, password);
-		}
-	} else {
-		return this.objectDAO.addMemo(memo, tenantId, query.room);
-	}
+	var password = query.password ? this.hash(query.password + tenantId) : '';
+	return this.objectDAO.addObject.apply(this.objectDAO, [memo, tenantId, query.room, password, query.isVisitable]);
 };
 
 ObjectService.prototype.changeMemo = function(query, tenantId) {
@@ -286,65 +238,150 @@ ObjectService.prototype.changeMemo = function(query, tenantId) {
 		imgId: query.targetId || query.targetName || query.imgId,
 		message: query.message
 	};
-	
-	if(query.password) {
-		var password = this.hash(query.password + tenantId);
-		if(query.isVisitable) {
-			return this.objectDAO.changeMemo(memo, tenantId, query.room, password, query.isVisitable);
-		} else {
-			return this.objectDAO.changeMemo(memo, tenantId, query.room, password);
-		}
-	} else {
-		return this.objectDAO.changeMemo(memo, tenantId, query.room);
-	}
+	var password = query.password ? this.hash(query.password + tenantId) : '';
+	return this.objectDAO.changeObject.apply(this.objectDAO, [memo, tenantId, query.room, password, query.isVisitable]);
 };
 
+ObjectService.prototype.addObject = function(query, tenantId) {
+	this.queryValidation(query, ['room', 'type']);
+	var data = {type: query.type};
 
-ObjectService.prototype.removeMemo = function(query, tenantId) {
+	for(var key in query) {
+		if(['room', 'tenant', 'callback', 'password', 'isVisitable'].indexOf(key) > -1) {
+			// No action
+		} else if(['targetId', 'targetName', 'imgId', 'name'].indexOf(key) > -1) {
+			data.imgId = query[key];
+		} else {
+			data[key] = query[key];
+		}
+	}
+	if(! Boolean(data.imgId)) {
+		data.imgId = data.type + '_' + (new Date()).getTime()
+	}
+	var password = query.password ? this.hash(query.password + tenantId) : '';
+	return this.objectDAO.addObject.apply(this.objectDAO, [data, tenantId, query.room, password, query.isVisitable]);
+};
+
+ObjectService.prototype.changeObject = function(query, tenantId) {
+	this.queryValidation(query, ['room', ['targetId', 'targetName', 'imgId']]);
+	var data = {};
+
+	for(var key in query) {
+		if(['room', 'tenant', 'callback', 'password', 'isVisitable'].indexOf(key) > -1) {
+			// No action
+		} else if(['targetId', 'targetName', 'imgId'].indexOf(key) > -1) {
+			data.imgId = query[key];
+		} else {
+			data[key] = query[key];
+		}
+	}
+	var password = query.password ? this.hash(query.password + tenantId) : '';
+	return this.objectDAO.changeObject.apply(this.objectDAO, [data, tenantId, query.room, password, query.isVisitable]);
+};
+
+ObjectService.prototype.addFloorTile = function(query, tenantId) {
+	var map = {
+		room: query.room,
+		type: 'floorTile',
+		imgId: query.targetId || query.targetName || query.imgId || query.name || false,
+		imageUrl: query.imageUrl || query.image || query.imageSource || PicsCatalog.getRandom('floorTile'),
+		width:this.numberlize(query.width, 1),
+		height:this.numberlize(query.height, 1),
+		x:this.numberlize(query.x),
+		y:this.numberlize(query.y)
+	};
+	
+	return this.addObject(map, tenantId);
+};
+
+ObjectService.prototype.addDiceSymbol = function(query, tenantId) {
+	var map = {
+		room: query.room,
+		type: 'diceSymbol',
+		imgId: query.targetId || query.targetName || query.imgId || query.name || false,
+		x:this.numberlize(query.x),
+		y:this.numberlize(query.y),
+		number:this.numberlize(query.number, 1),
+		maxNumber:this.numberlize(query.maxNumber, 6),
+		owner: query.owner || ''
+	};
+		
+	return this.addObject(map, tenantId);
+};
+
+ObjectService.prototype.addMapMask = function(query, tenantId) {
+	var map = {
+		room: query.room,
+		type: 'mapMask',
+		imgId: query.targetId || query.targetName || query.imgId || query.name || false,
+		color: query.color || 16711680,
+		alpha: query.opacity || query.alpha || 0.5,
+		width:this.numberlize(query.width, 1),
+		height:this.numberlize(query.height, 1),
+		x:this.numberlize(query.x),
+		y:this.numberlize(query.y)
+	};
+	
+	return this.addObject(map, tenantId);
+};
+
+ObjectService.prototype.addMapMarker = function(query, tenantId) {
+	var map = {
+		room: query.room,
+		type: 'mapMarker',
+		message: query.message || '-',
+		imgId: query.targetId || query.targetName || query.imgId || query.name || false,
+		color: query.color || false,
+		isPaint: this.boolealize(query.isPaint, false),
+		width:this.numberlize(query.width, 1),
+		height:this.numberlize(query.height, 1),
+		x:this.numberlize(query.x),
+		y:this.numberlize(query.y)
+	};
+	
+	return this.addObject(map, tenantId);
+};
+
+ObjectService.prototype.addChit = function(query, tenantId) {
+	var map = {
+		room: query.room,
+		type: 'chit',
+		info: query.info || query.message || '-',
+		imgId: query.targetId || query.targetName || query.imgId || query.name || false,
+		imageUrl: query.imageUrl || query.image || query.imageSource || PicsCatalog.getRandom('character'),
+		width:this.numberlize(query.width, 1),
+		height:this.numberlize(query.height, 1),
+		x:this.numberlize(query.x),
+		y:this.numberlize(query.y)
+	};
+	
+	return this.addObject(map, tenantId);
+};
+
+ObjectService.prototype.removeObject = function(query, tenantId) {
 	this.queryValidation(query, ['room', ['targetId', 'targetName', 'imgId']]);
 	
 	var imgId = query.targetId || query.targetName || query.imgId;
-	
-	if(query.password) {
-		var password = this.hash(query.password + tenantId);
-		if(query.isVisitable) {
-			return this.objectDAO.removeMemo(imgId, tenantId, query.room, password, query.isVisitable);
-		} else {
-			return this.objectDAO.removeMemo(imgId, tenantId, query.room, password);
-		}
-	} else {
-		return this.objectDAO.removeMemo(imgId, tenantId, query.room);
+	var password = query.password ? this.hash(query.password + tenantId) : '';
+	try {
+		return this.objectDAO.removeObject.apply(this.objectDAO, [imgId, tenantId, query.room, password, query.isVisitable]);
+	} catch (e) {
+		this.handleError(e);
 	}
 };
 
 ObjectService.prototype.getMemos = function(query, tenantId) {
 	this.queryValidation(query, ['room']);
 	var time = query.characters || query.lastUpdateTime || query.lastUpdate || 0;
-	if(query.password) {
-		var password = this.hash(query.password + tenantId);
-		if(query.isVisitable) {
-			return this.objectDAO.getMemos(time, tenantId, query.room, password, query.isVisitable);
-		} else {
-			return this.objectDAO.getMemos(time, tenantId, query.room, password);
-		}
-	} else {
-		return this.objectDAO.getMemos(time, tenantId, query.room);
-	}
+	var password = query.password ? this.hash(query.password + tenantId) : '';
+	return this.objectDAO.getMemos.apply(this.objectDAO, [time, tenantId, query.room, password, query.isVisitable]);
 };
 
 ObjectService.prototype.getMap = function(query, tenantId) {
 	this.queryValidation(query, ['room']);
 	var time = query.map || query.lastUpdateTime || query.lastUpdate || 0;
-	if(query.password) {
-		var password = this.hash(query.password + tenantId);
-		if(query.isVisitable) {
-			return this.objectDAO.getMap(time, tenantId, query.room, password, query.isVisitable);
-		} else {
-			return this.objectDAO.getMap(time, tenantId, query.room, password);
-		}
-	} else {
-		return this.objectDAO.getMap(time, tenantId, query.room);
-	}
+	var password = query.password ? this.hash(query.password + tenantId) : '';
+	return this.objectDAO.getMap.apply(this.objectDAO, [time, tenantId, query.room, password, query.isVisitable]);
 };
 
 ObjectService.prototype.setMap = function(query, tenantId) {
@@ -358,17 +395,9 @@ ObjectService.prototype.setMap = function(query, tenantId) {
 			map[key.dataKey] = query[key.queryKey];
 		}
 	});
-
-	if(query.password) {
-		var password = this.hash(query.password + tenantId);
-		if(query.isVisitable) {
-			return this.objectDAO.setMap(map, tenantId, query.room, password, query.isVisitable);
-		} else {
-			return this.objectDAO.setMap(map, tenantId, query.room, password);
-		}
-	} else {
-		return this.objectDAO.setMap(map, tenantId, query.room);
-	}
+	
+	var password = query.password ? this.hash(query.password + tenantId) : '';
+	return this.objectDAO.setMap.apply(this.objectDAO, [map, tenantId, query.room, password, query.isVisitable]);
 };
 
 module.exports = ObjectService;
